@@ -1,0 +1,10 @@
+# local customization files
+config.sh
+
+# tmp files
+.vagrant
+_misc
+
+# generated / distributable files
+dist/
+
