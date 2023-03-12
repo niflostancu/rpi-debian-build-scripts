@@ -3,14 +3,14 @@
 
 # Apt sources
 cat <<EOF > /etc/apt/sources.list
-deb $APT_REPO_BASE_URL $DEB_VERSION main
-deb-src $APT_REPO_BASE_URL $DEB_VERSION main
+deb $APT_REPO_BASE_URL $DEB_VERSION main contrib non-free
+deb-src $APT_REPO_BASE_URL $DEB_VERSION main contrib non-free
 
-deb $APT_REPO_SECURITY_URL $DEB_VERSION-security main
-deb-src $APT_REPO_SECURITY_URL $DEB_VERSION-security main
+deb $APT_REPO_SECURITY_URL $DEB_VERSION-security main contrib non-free
+deb-src $APT_REPO_SECURITY_URL $DEB_VERSION-security main contrib non-free
 
-deb $APT_REPO_BASE_URL $DEB_VERSION-updates main
-deb-src $APT_REPO_BASE_URL $DEB_VERSION-updates main
+deb $APT_REPO_BASE_URL $DEB_VERSION-updates main contrib non-free
+deb-src $APT_REPO_BASE_URL $DEB_VERSION-updates main contrib non-free
 EOF
 
 # Disable the auto installation of recommended packages

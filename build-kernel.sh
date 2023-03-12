@@ -12,7 +12,7 @@ KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"interceptor_defconfig"}
 KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi-nas'}
 
 if [[ ! -d "$KERNEL_DEST" ]]; then
-    mkdir -p "$(basename "$KERNEL_DEST")"
+    mkdir -p "$(dirname "$KERNEL_DEST")"
     git clone --depth=1 https://github.com/raspberrypi/linux \
         --branch "$KERNEL_BRANCH" --single-branch "$KERNEL_DEST"
 fi

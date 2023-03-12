@@ -65,7 +65,7 @@ HAS_STAGE2=
 [[ -f "$ROOTFS_DEST/usr/bin/cp" && ! -f "$ROOTFS_DEST/debootstrap/debootstrap" ]] && HAS_STAGE2=1 || true
 
 if [[ -z "$HAS_STAGE1" ]]; then
-    mkdir -p "$(basename "$ROOTFS_DEST")"
+    mkdir -p "$(dirname "$ROOTFS_DEST")"
     $SUDO mkdir -p "$ROOTFS_DEST"
     debootstrap_stage1 "$ROOTFS_DEST"
 fi

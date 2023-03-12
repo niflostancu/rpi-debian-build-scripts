@@ -1,0 +1,3 @@
+# Interceptor RPI CM4 carrier board udev rules
+ACTION=="add", DEVPATH=="/devices/platform/rtl8367rb", RUN+="/usr/local/bin/config-rtl8367rb.sh"
+

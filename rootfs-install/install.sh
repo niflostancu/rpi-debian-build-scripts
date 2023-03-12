@@ -9,11 +9,13 @@ source "$SRC_DIR/config.sh"
 # dependencies
 source "$SRC_DIR/lib/packages.sh"
 
+ROOTFS_INSTALL_SRC="$SRC_DIR/rootfs-install"
+
 # iterate through a sorted list of scripts and source them
 while IFS=  read -r -d $'\0' file; do
     log_info "Running '$file'..."
-    source "$SRC_DIR/rootfs-install/scripts/$file"
+    source "$ROOTFS_INSTALL_SRC/scripts/$file"
 
-done < <(find "$SRC_DIR/rootfs-install/scripts/" \
+done < <(find "$ROOTFS_INSTALL_SRC/scripts/" \
     '(' -type f -iname '*.sh' ')' -printf '%P\0' | sort -n -u -z)
 

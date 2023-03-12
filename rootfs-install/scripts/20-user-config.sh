@@ -2,8 +2,10 @@
 # Configure services (ssh, mostly)
 
 # create user, if it doesn't exist
-getent passwd "$MAIN_USER" &> /dev/null || useradd -m -s /bin/bash "$MAIN_USER"
-
+getent passwd "$MAIN_USER" &> /dev/null || {
+    useradd -m -s /bin/bash "$MAIN_USER"
+    passwd -d "$MAIN_USER"
+}
 # give sudo rights
 grep -q "$MAIN_USER" /etc/sudoers 2>/dev/null || \
     (echo "$MAIN_USER ALL=(ALL:ALL) ALL" | EDITOR='tee -a' visudo)
