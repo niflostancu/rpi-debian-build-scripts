@@ -46,12 +46,34 @@ function debootstrap_stage2() {
     # echo "$DEB_SOURCES" > "$MOUNTPOINT/etc/apt/sources.list"
 }
 
+function provision_rootfs() {
+    local MOUNTPOINT="$1"
+    # copy self to the rootfs
+    $SUDO rsync -a --delete --chown root --chmod=755 --mkpath \
+        --exclude=".*" \
+        "$SRC_DIR/" \
+        "$MOUNTPOINT/root/rpi-provisioning/"
+    # run the install script
+    "$SRC_DIR/chroot.sh" bash "/root/rpi-provisioning/rootfs-install/install.sh"
+}
+
 log_info "RootFS target: $ROOTFS_DEST"
-if [[ -z "$1" ]]; then
-    mkdir -p "$ROOTFS_DEST"
+
+HAS_STAGE1=
+[[ -f "$ROOTFS_DEST/usr/bin/cp" || -f "$ROOTFS_DEST/debootstrap/debootstrap" ]] && HAS_STAGE1=1 || true
+HAS_STAGE2=
+[[ -f "$ROOTFS_DEST/usr/bin/cp" && ! -f "$ROOTFS_DEST/debootstrap/debootstrap" ]] && HAS_STAGE2=1 || true
+
+if [[ -z "$HAS_STAGE1" ]]; then
+    mkdir -p "$(basename "$ROOTFS_DEST")"
+    $SUDO mkdir -p "$ROOTFS_DEST"
     debootstrap_stage1 "$ROOTFS_DEST"
+fi
+if [[ -z "$HAS_STAGE2" ]]; then
     rootfs_copy_qemu_static "$ROOTFS_DEST"
     debootstrap_stage2 "$ROOTFS_DEST"
-elif [[ "$1" == "stage2" ]]; then
-    debootstrap_stage2 "$ROOTFS_DEST"
 fi
+
+# last stage: run the provisioning tasks inside the container
+provision_rootfs "$ROOTFS_DEST"
+

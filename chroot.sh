@@ -32,7 +32,11 @@ while [[ $# > 0 ]]; do
     shift
 done
 
-CHROOT_ENV+=("PATH=$PATH")
+# default chroot command
+if [[ "$#" == 0 ]]; then
+    set -- "bash"
+fi
+
 export SYSTEMD_SECCOMP=0
 
 log_info "Chrooting into '$ROOTFS_DEST'"

@@ -46,6 +46,9 @@ function log_info() { _log_internal "info" "$@"; }
 function log_error() { _log_internal "err" "$@" >&2; }
 function log_fatal() { _log_internal "err" "$@" >&2; exit 1; }
 
+function @silent() {
+    "$@" >/dev/null 2>&1
+}
 
 # Check whether the current user is root
 function check_user_root() {
