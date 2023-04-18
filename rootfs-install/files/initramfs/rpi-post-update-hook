@@ -8,14 +8,16 @@ if [[ -z "$version" ]]; then
 	exit 2
 fi
 
+RPI_CONFIG_FILE=/etc/initramfs/rpi-config.txt
+RPI_CMDLINE_FILE=/etc/initramfs/rpi-cmdline.txt
+BOOT_IMG=/boot/boot.img
+BOOT_IMG_SIZE=32  # MB
+BOOT_MOUNTPOINT=/tmp/rpi-boot-img
+
 # read config vars
 source /etc/initramfs/rpi-vars.sh
 
 echo "Running RPI ramdisk generator for version $version..."
-
-BOOT_IMG=/boot/boot.img
-BOOT_IMG_SIZE=30  # MB
-BOOT_MOUNTPOINT=/tmp/rpi-boot-img
 
 dd if=/dev/zero bs=1M count=$BOOT_IMG_SIZE of="$BOOT_IMG"
 losetup /dev/loop8 "$BOOT_IMG"
@@ -45,22 +47,15 @@ for file in "${RPI_FIRMWARE_FILES[@]}"; do
 	fi
 done
 
-cat <<EOF > "$BOOT_MOUNTPOINT"/config.txt
-# dtoverlay=vc4-kms-v3d
-dtparam=i2c_vc=on
-arm_64bit=1
-initramfs initrd.img followkernel
-enable_uart=1
-otg_mode=1
-boot_delay=1
-disable_overscan=1
-disable_splash=1
-$RPI_CONFIG
-EOF
-
-cat <<EOF > "$BOOT_MOUNTPOINT/cmdline.txt"
-console=serial0,115200 console=tty1 root=PARTLABEL=RPIOSRoot rootwait rw fsck.repair=yes net.ifnames=0 $RPI_CMDLINE
-EOF
+RPI_CONFIG=$(cat "$RPI_CONFIG_FILE")
+RPI_CMDLINE=$(cat "$RPI_CMDLINE_FILE" | head -1)
+[[ -z "$RPI_CONFIG_EXTRA" ]] || RPI_CONFIG+="
+$RPI_CONFIG_EXTRA"
+[[ -z "$RPI_CMDLINE_EXTRA" ]] || RPI_CMDLINE+=" $RPI_CMDLINE_EXTRA"
+echo "$RPI_CONFIG" > "$BOOT_MOUNTPOINT/config.txt"
+echo "$RPI_CMDLINE" > "$BOOT_MOUNTPOINT/cmdline.txt"
+# cat "$BOOT_MOUNTPOINT/config.txt"
+# cat "$BOOT_MOUNTPOINT/cmdline.txt"
 
 echo "RPI boot ramdisk '$BOOT_IMG' successfull generated!"
 ls -lh "$BOOT_MOUNTPOINT"

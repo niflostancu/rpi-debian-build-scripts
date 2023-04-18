@@ -2,10 +2,12 @@
 # Local configuration file
 # Rename to 'config.sh' for scripts to load it.
 
+# Note: $SRC_DIR is available for building abs paths!
+
 # Sudo-like utility to use (when root is required)
 SUDO=sudo
 
-# destination dirs
+# destination dirs (note: you need )
 ROOTFS_DEST="/tmp/rpi-nas/rootfs/"
 KERNEL_DEST="/tmp/rpi-nas/kernel-build/"
 
@@ -22,9 +24,11 @@ KERNEL_MAKE_THREADS=8
 
 # RPI Firmware files to copy to the boot ramdisk
 RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-cm4.dtb)
-# Interceptor board example:
 #RPI_FIRMWARE_FILES+=(/boot/interceptor.dtb)
-#RPI_CONFIG="device_tree=interceptor.dtb"
+#RPI_CONFIG_FILE="$SRC_DIR/rootfs-install/files/boot/config.txt"
+#RPI_CMDLINE_FILE="$SRC_DIR/rootfs-install/files/boot/cmdline.txt"
+# Interceptor board example:
+#RPI_CONFIG_EXTRA="device_tree=interceptor.dtb"
 
 # extra packages to install
 #EXTRA_PACKAGES=(firmware-realtek)

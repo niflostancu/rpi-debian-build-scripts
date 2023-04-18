@@ -15,14 +15,21 @@ fi
 # first, install initramfs generation hooks to generate boot.img
 # https://kernel-team.pages.debian.net/kernel-handbook/ch-update-hooks.html
 install -oroot -m755 -d /etc/initramfs/post-update.d/
-install -oroot -m755 "$ROOTFS_INSTALL_SRC/files/initramfs-post-update/rpi-boot-img" \
+install -oroot -m755 "$ROOTFS_INSTALL_SRC/files/initramfs/rpi-post-update-hook" \
     /etc/initramfs/post-update.d/90-rpi-boot-img
+
+# install default boot files
+[[ -n "$RPI_CONFIG_FILE" ]] || RPI_CONFIG_FILE="$SRC_DIR/rootfs-install/files/boot/config.txt"
+[[ -n "$RPI_CMDLINE_FILE" ]] || RPI_CMDLINE_FILE="$SRC_DIR/rootfs-install/files/boot/cmdline.txt"
+install -oroot -m755 "$RPI_CONFIG_FILE" "/etc/initramfs/rpi-config.txt"
+install -oroot -m755 "$RPI_CMDLINE_FILE" "/etc/initramfs/rpi-cmdline.txt"
+
 # save configuration vars
 cat << EOF > /etc/initramfs/rpi-vars.sh
-$([[ -z "$RPI_CMDLINE" ]] || declare -p RPI_CMDLINE)
+$([[ -z "$RPI_CMDLINE_EXTRA" ]] || declare -p RPI_CMDLINE_EXTRA)
 $([[ -z "$RPI_FIRMWARE_FILES" ]] || declare -p RPI_FIRMWARE_FILES)
-$([[ -z "$RPI_CONFIG" ]] || declare -p RPI_CONFIG)
-
+$([[ -z "$RPI_BOOT_EXTRA_FILES" ]] || declare -p RPI_BOOT_EXTRA_FILES)
+$([[ -z "$RPI_CONFIG_EXTRA" ]] || declare -p RPI_CONFIG_EXTRA)
 EOF
 
 # [Re]Install kernel package (initramfs will be generated and hooks run)
