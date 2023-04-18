@@ -148,3 +148,16 @@ Additional steps must be taken for a LUKS-based setup (on the live RPI distro):
 - Finally, run `update-initramfs -u` to re-generate the initial ramdisk and copy
   the `boot.img` to the boot partition (as in Step. 5).
 
+### Frequently asked questions / Workarounds
+
+#### Temporary failure in name resolution
+
+Unfortunately, `systemd-nspawn` overwrites the `/etc/resolv.conf` file. If you
+want to use `systemd-resolved` as DNS resolver, [take a look
+here](https://wiki.archlinux.org/title/Systemd-resolved) (Arch Wiki FTW!); TLDR:
+
+```sh
+# on a booted (i.e., non-chroot) system:
+ln -rsf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+```
+

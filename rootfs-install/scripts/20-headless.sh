@@ -26,3 +26,7 @@ systemctl enable systemd-networkd.service
 systemctl enable systemd-resolved.service
 systemctl disable systemd-networkd-wait-online.service
 
+# workaround for linking resolv.conf to systemd-resolved's inside a chroot
+[[ -d "/run/systemd/resolve/" ]] || mkdir -p "/run/systemd/resolve/"
+ln -rsf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
