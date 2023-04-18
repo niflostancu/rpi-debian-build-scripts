@@ -1,8 +1,6 @@
 #!/bin/bash
 # Provisioning script initialization: common variables
 
-DIST_DIR="$SRC_DIR/dist"
-
 APT_REPO_BASE_URL="http://deb.debian.org/debian"
 APT_REPO_SECURITY_URL="http://deb.debian.org/debian-security/"
 DEB_ARCH="arm64"

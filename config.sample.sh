@@ -25,8 +25,8 @@ KERNEL_MAKE_THREADS=8
 # RPI Firmware files to copy to the boot ramdisk
 RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-cm4.dtb)
 #RPI_FIRMWARE_FILES+=(/boot/interceptor.dtb)
-#RPI_CONFIG_FILE="$SRC_DIR/rootfs-install/files/boot/config.txt"
-#RPI_CMDLINE_FILE="$SRC_DIR/rootfs-install/files/boot/cmdline.txt"
+#RPI_CONFIG_FILE="$INSTALL_SRC/files/boot/config.txt"
+#RPI_CMDLINE_FILE="$INSTALL_SRC/files/boot/cmdline.txt"
 # Interceptor board example:
 #RPI_CONFIG_EXTRA="device_tree=interceptor.dtb"
 

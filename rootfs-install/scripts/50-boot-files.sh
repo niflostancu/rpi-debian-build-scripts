@@ -28,12 +28,12 @@ fi
 # first, install initramfs generation hooks to generate boot.img
 # https://kernel-team.pages.debian.net/kernel-handbook/ch-update-hooks.html
 install -oroot -m755 -d /etc/initramfs/post-update.d/
-install -oroot -m755 "$ROOTFS_INSTALL_SRC/files/initramfs/rpi-post-update-hook" \
+install -oroot -m755 "$INSTALL_SRC/files/initramfs/rpi-post-update-hook" \
     /etc/initramfs/post-update.d/90-rpi-boot-img
 
 # install default boot files
-[[ -n "$RPI_CONFIG_FILE" ]] || RPI_CONFIG_FILE="$SRC_DIR/rootfs-install/files/boot/config.txt"
-[[ -n "$RPI_CMDLINE_FILE" ]] || RPI_CMDLINE_FILE="$SRC_DIR/rootfs-install/files/boot/cmdline.txt"
+[[ -n "$RPI_CONFIG_FILE" ]] || RPI_CONFIG_FILE="$INSTALL_SRC/files/boot/config.txt"
+[[ -n "$RPI_CMDLINE_FILE" ]] || RPI_CMDLINE_FILE="$INSTALL_SRC/files/boot/cmdline.txt"
 install -oroot -m755 "$RPI_CONFIG_FILE" "/etc/initramfs/rpi-config.txt"
 install -oroot -m755 "$RPI_CMDLINE_FILE" "/etc/initramfs/rpi-cmdline.txt"
 
