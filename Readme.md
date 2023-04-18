@@ -10,6 +10,8 @@ Features:
 - custom kernel building script (using cross-compiler);
 - modular approach for running a series of provisioning scripts inside the
   rootfs to fully configure the Debian installation;
+- configuration for a LUKS-based setup with dropbear-initramfs for remote
+  unlocking (via ssh);
 - utility bash libraries for colorful logging / debugging / package management;
 - vagrant provisioning file for non-Debian hosts;
 
@@ -54,8 +56,8 @@ The provisioning stages can be re-run at any time by invoking the same script
 
 0. Make sure you understand the [RPI4 boot
   process](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-4-boot-flow).
-  Also check if your current bootloader version supports the required features,
-  upgrade if necessary.
+  Also check if your current bootloader version supports the required features
+  (i.e., boot from USB), upgrade if necessary.
 
 1. First, archive the generated rootfs:
   ```sh
@@ -82,8 +84,16 @@ The provisioning stages can be re-run at any time by invoking the same script
   tar xf "rootfs.tar.gz" -C /mnt
   ```
 
+  Optionally, chroot inside the newly installed rootfs and tweak your settings
+  (don't forget to change the user's password / add ssh authorized_keys).
+
 5. Now, finally, the boot partition: it's recommended to mount it into a separate
-   path than `/boot`, e.g. `/boot/rpi`.
+  path than `/boot`, e.g. `/boot/rpi`:
+
+  ```sh
+  mkdir -p /boot/rpi
+  mount /dev/mmcblk0p1 /boot/rpi
+  ```
 
   The included initramfs script has already generated a `boot.img` disk image
   with the kernel, initramfs and other config/firmware files required by the RPI
@@ -91,9 +101,44 @@ The provisioning stages can be re-run at any time by invoking the same script
 
   You can simply copy it to RPI's boot partition and use a simple config.txt
   telling it to [load the ramdisk](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#boot_ramdisk):
-  ```ini
-  boot_ramdisk=1
+  ```sh
+  # note: replace this path if you are inside chroot
+  cp -f /mnt/boot/boot.img /boot/rpi/boot.img
+  echo "boot_ramdisk=1" > /boot/rpi/config.txt
   ```
 
   Using this, you can also support boot failover configurations (TODO)!
+
+### Configuring LUKS initramfs for password input
+
+Additional steps must be taken for a LUKS-based setup (on the live RPI distro):
+
+- Before extracting the archive onto the root filesystem, make sure to use
+  a LUKS-formatted partition (optionally with LVM; read the [Arch
+  Wiki](https://wiki.archlinux.org/title/dm-crypt/Device_encryption));
+
+  Make sure to open & mount the newly created partition to `/mnt`, e.g.:
+  ```sh
+  # assuming you labeled the GPT partition (hint: use gdisk):
+  cryptsetup luksOpen /dev/disk/by-partlabel/RPIOSRoot cryptroot
+  mount /dev/mapper/cryptroot /mnt
+  ```
+
+- chroot into the partition; hint: use the `arch-chroot` script (also available
+  on debian after installing the `arch-install-scripts`) which makes this easy:
+
+  ```sh
+  arch-chroot /mnt
+  ```
+
+- Create a `/etc/crypttab` containing at least one entry for the `cryptroot`
+  target (or whatever name you used when opening the LUKS device):
+
+  ```
+  # <target> <source device>                 <key file>  <options>
+  cryptroot  /dev/disk/by-partlabel/RPIOSRoot  none        luks,discard
+  ```
+
+- Finally, run `update-initramfs -u` to re-generate the initial ramdisk and copy
+  the `boot.img` to the boot partition (as in Step. 5).
 

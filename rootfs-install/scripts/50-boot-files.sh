@@ -1,7 +1,20 @@
 #!/bin/bash
 # Installs bootloader / kernel files & configs
 
-apt_install initramfs-tools dropbear-initramfs cryptsetup raspi-firmware
+apt_install initramfs-tools cryptsetup console-setup dropbear-initramfs \
+    cryptsetup-initramfs raspi-firmware
+
+# boot-related configuration files
+[[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]] || \
+    DROPBEAR_AUTHORIZED_KEYS="$DIST_DIR/authorized_keys"
+if [[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]]; then
+    install -oroot -m755 "$DROPBEAR_AUTHORIZED_KEYS" "/etc/dropbear-initramfs/authorized_keys"
+fi
+
+if [[ -n "$DROPBEAR_PORT" ]]; then
+    sed -i 's/^#\?DROPBEAR_OPTIONS=.*/DROPBEAR_OPTIONS="-p '$DROPBEAR_PORT'"/' \
+        /etc/dropbear-initramfs/config
+fi
 
 # debs to install
 KERNEL_PREFIXES=(linux-image- linux-headers- linux-libc-dev)

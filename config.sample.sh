@@ -36,6 +36,10 @@ RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-cm4.dtb)
 # extra .deb files to install
 #EXTRA_DEBS=(swconfig-1.0.101-aarch64.deb)
 
+# initramfs dropbear settings
+#DROPBEAR_AUTHORIZED_KEYS="$SRC_DIR/dist/authorized_keys"
+#DROPBEAR_PORT=2002
+
 # Extra installation hook (to run custom scripts)
 function custom_script() {
     #bash "$SRC_DIR/extra-interceptor/install.sh"
