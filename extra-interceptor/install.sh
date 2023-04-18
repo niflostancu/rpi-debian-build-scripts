@@ -9,5 +9,6 @@ install -oroot -m644 "$SRC_DIR/eth0.network" "/etc/systemd/network/eth0.network"
 install -oroot -m644 "$SRC_DIR/eth0-wan.network" "/etc/systemd/network/eth0-wan.network"
 cp "$SRC_DIR/interceptor.dtb" "/boot/interceptor.dtb"
 
+mkdir -p "/etc/initramfs-tools/hooks/"
 install -oroot -m755 "$SRC_DIR/initramfs-network-hook.sh" "/etc/initramfs-tools/hooks/interceptor-network"
 
