@@ -2,7 +2,7 @@
 # Installs bootloader / kernel files & configs
 
 apt_install initramfs-tools cryptsetup console-setup dropbear-initramfs \
-    cryptsetup-initramfs raspi-firmware
+    cryptsetup-initramfs
 
 # boot-related configuration files
 [[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]] || \
