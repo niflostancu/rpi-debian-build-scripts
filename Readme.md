@@ -32,25 +32,31 @@ Host system requirements for rootfs bootstrapping:
 For building the kernel, either a Debian-based host distro is required (for .deb
 generation) or a working [Vagrant](https://www.vagrantup.com/) install (a
 provisioning script is provided).
-Also, kernel compile dependencies must be present!
+Also, kernel compile dependencies must be present (a provisioning script is
+included for Vagrant ;) )!
 
 ## Building
 
 The kernel and the rootfs are built separately, though the final stages
 of the provisioning scripts require a kernel `.deb` package to be present.
 
-First, copy `config.sample.sh` as `config.sh` and enter the desired values.
+First, copy `config.sample.sh` as `config.sh` and change your desired options.
 
 To compile the kernel, use a Debian-based system with kernel dependencies
-installed, then: `./build-kernel.sh`. Manually copy the generated `.deb` files
-to the `dist/` directory (create it if it doesn't exist).
+installed.
 For this specific purpose, a Vagrantfile is also supplied (configured to spawn
 a Debian-based VM).
+Then, simply: `./build-kernel.sh`!
+
+After building the kernel, please do a manual copy of the obtained `*.deb`
+packages to the `dist/` directory in here (create it if it doesn't exist, as it
+is gitignored). The `build-rootfs.sh` script will look there during the install
+phase (see [50-boot-files.sh](rootfs-install/scripts/50-boot-files.sh)).
 
 For building the rootfs, the `build-rootfs.sh` script will run all bootstrapping
 and provisioning stages.
-The provisioning stages can be re-run at any time by invoking the same script
-(scripts were designed for idempotence, aka not doing the same thing again).
+The installation scripts can be re-run at any time by invoking the same script
+(scripts were designed for idempotence, i.e. not doing the same thing again).
 
 ## Deploying to RaspberryPi boot media
 
