@@ -20,12 +20,16 @@ fi
 cd "$KERNEL_DEST"
 pwd
 
-for pfile in "$SRC_DIR/kernel-patches/linux-"*.patch; do
-    if ! patch -R -p1 -s -f --dry-run <"$pfile"; then
-        log_debug "Applying patch $pfile"
-        patch -p1 < "$pfile"
-    fi
-done
+if [[ -n "$KERNEL_PATCHES_DIR" ]] && [[ -d "$KERNEL_PATCHES_DIR" ]]; then
+    log_info "Using patch dir: $KERNEL_PATCHES_DIR"
+    for pfile in "$KERNEL_PATCHES_DIR/"*.patch; do
+        # idempotency: check if patch has already been applied
+        if ! patch -R -p1 -s -f --dry-run <"$pfile"; then
+            log_debug "Applying patch $pfile"
+            patch -p1 < "$pfile"
+        fi
+    done
+fi
 
 if [[ "$CLEAN" == "1" ]]; then
     make clean

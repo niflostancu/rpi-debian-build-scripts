@@ -16,7 +16,8 @@ CROSS_COMPILER="aarch64-linux-gnu-"
 
 # kernel compile options
 KERNEL_MAKE_THREADS=8
-# KERNEL_DEFCONFIG=interceptor_defconfig
+#KERNEL_DEFCONFIG=interceptor_defconfig
+#KERNEL_PATCHES_DIR="$SRC_DIR/extra-interceptor/kernel-patches"
 
 # --------------------------------------------------
 # RootFS provisioning options
