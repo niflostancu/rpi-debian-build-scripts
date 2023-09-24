@@ -3,7 +3,7 @@
 
 Vagrant.configure("2") do |config|
   # we need a Debian-like distro for kernel .deb generation
-  config.vm.box = "debian/bullseye64"
+  config.vm.box = "debian/bookworm64"
 
   # Disable automatic box update checking
   # config.vm.box_check_update = false

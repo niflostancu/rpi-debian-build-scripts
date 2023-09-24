@@ -4,7 +4,7 @@
 APT_REPO_BASE_URL="http://deb.debian.org/debian"
 APT_REPO_SECURITY_URL="http://deb.debian.org/debian-security/"
 DEB_ARCH="arm64"
-DEB_VERSION="bullseye"
+DEB_VERSION="bookworm"
 
 TIMEZONE_AREA=${TIMEZONE_AREA:-Europe}
 TIMEZONE_CITY=${TIMEZONE_AREA:-Bucharest}

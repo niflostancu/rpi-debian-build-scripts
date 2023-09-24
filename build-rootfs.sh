@@ -8,7 +8,7 @@ source "$SRC_DIR/lib/common.sh"
 source "$SRC_DIR/config.sh"
 
 DEB_ARCH="arm64"
-DEB_VERSION="bullseye"
+DEB_VERSION="bookworm"
 DEB_INSTALL_BASE_PKGS="ca-certificates,"
 DEB_PROXY="http://ftp.de.debian.org/debian"
 QEMU_ARCH="aarch64"

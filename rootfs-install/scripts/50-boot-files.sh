@@ -8,12 +8,13 @@ apt_install initramfs-tools cryptsetup console-setup dropbear-initramfs \
 [[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]] || \
     DROPBEAR_AUTHORIZED_KEYS="$DIST_DIR/authorized_keys"
 if [[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]]; then
-    install -oroot -m755 "$DROPBEAR_AUTHORIZED_KEYS" "/etc/dropbear-initramfs/authorized_keys"
+    mkdir -p /etc/dropbear/initramfs
+    install -oroot -m755 "$DROPBEAR_AUTHORIZED_KEYS" "/etc/dropbear/initramfs/authorized_keys"
 fi
 
 if [[ -n "$DROPBEAR_PORT" ]]; then
     sed -i 's/^#\?DROPBEAR_OPTIONS=.*/DROPBEAR_OPTIONS="-p '$DROPBEAR_PORT'"/' \
-        /etc/dropbear-initramfs/config
+        /etc/dropbear/initramfs/dropbear.conf
 fi
 
 # debs to install
