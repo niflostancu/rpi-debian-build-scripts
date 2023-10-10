@@ -51,6 +51,7 @@ DROPBEAR_PORT=2002
 # and now... the Interceptor board example preset:
 if [[ "$IS_INTERCEPTOR" == "1" ]]; then
     KERNEL_PATCHES_DIR="$SRC_DIR/extra-interceptor/kernel-patches"
+    KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"interceptor_defconfig"}
 
     # RPI boot files (will be copied by extra-interceptor/install.sh)
     RPI_FIRMWARE_FILES+=(/boot/interceptor.dtb)
