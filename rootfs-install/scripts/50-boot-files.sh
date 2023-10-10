@@ -1,6 +1,8 @@
 #!/bin/bash
 # Installs bootloader / kernel files & configs
 
+if [[ "$SKIP_BOOT_FILES" =~ ^1|y(es)?$ ]]; then return 0; fi
+
 apt_install initramfs-tools cryptsetup console-setup dropbear-initramfs \
     cryptsetup-initramfs
 
