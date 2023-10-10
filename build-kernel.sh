@@ -6,6 +6,7 @@ SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
 source "$SRC_DIR/config.sh"
 
+KERNEL_DEST=${KERNEL_DEST:-"$BUILD_DEST/kernel-build"}
 KERNEL_BRANCH=${KERNEL_BRANCH:-"rpi-5.15.y"}
 KERNEL_ARCH=${KERNEL_DEFCONFIG:-"arm64"}
 KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"interceptor_defconfig"}

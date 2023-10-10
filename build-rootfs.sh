@@ -7,6 +7,7 @@ SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
 source "$SRC_DIR/config.sh"
 
+ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 DEB_ARCH="arm64"
 DEB_VERSION="bookworm"
 DEB_INSTALL_BASE_PKGS="ca-certificates,"

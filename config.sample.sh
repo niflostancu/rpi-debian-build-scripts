@@ -11,8 +11,11 @@ SUDO=sudo
 #IS_INTERCEPTOR=1
 
 # destination dirs (note: you need ~5GB of free disk space in here)
-ROOTFS_DEST="/tmp/rpi-nas/rootfs/"
-KERNEL_DEST="/tmp/rpi-nas/kernel-build/"
+BUILD_DEST=/tmp/rpi-debian
+#ROOTFS_DEST="$BUILD_DEST/rootfs"
+#KERNEL_DEST="$BUILD_DEST/kernel-build"
+#UBOOT_DEST="$BUILD_DEST/u-boot"
+#IMAGE_DEST="$BUILD_DEST/image.bin"
 
 # cross compiler options
 CROSS_COMPILER="aarch64-linux-gnu-"

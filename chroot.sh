@@ -6,6 +6,7 @@ SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
 source "$SRC_DIR/config.sh"
 
+ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 CHROOT_USER=${CHROOT_USER:-root}
 CHROOT_HOME=${CHROOT_HOME:-/root}
 NSPAWN_ARGS=(
