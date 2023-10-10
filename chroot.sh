@@ -18,6 +18,7 @@ CHROOT_PATH=/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin
 CHROOT_ENV=(
     TERM="$TERM" PS1='\u:\w\$ ' DEBUG=$DEBUG
     USER="$CHROOT_USER" HOME="$CHROOT_HOME"
+    CUSTOM_CONFIG="$CUSTOM_CONFIG"
 )
 while [[ $# > 0 ]]; do
     case "$1" in

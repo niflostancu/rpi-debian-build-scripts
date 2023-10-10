@@ -39,7 +39,7 @@ function _log_internal() {
 }
 
 function log_debug() {
-    [[ "$DEBUG" == "1" ]] || return 0
+    [[ -n "$DEBUG" ]] || return 0
     _log_internal "debug" "$@"
 }
 function log_info() { _log_internal "info" "$@"; }
