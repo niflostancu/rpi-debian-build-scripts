@@ -94,11 +94,11 @@ The installation scripts can be re-run at any time by invoking the same script
   (don't forget to change the user's password / add ssh authorized_keys).
 
 5. Now, finally, the boot partition: it's recommended to mount it into a separate
-  path than `/boot`, e.g. `/boot/rpi`:
+  path than `/boot`, e.g. `/boot/firmware`:
 
   ```sh
-  mkdir -p /boot/rpi
-  mount /dev/mmcblk0p1 /boot/rpi
+  mkdir -p /boot/firmware
+  mount /dev/mmcblk0p1 /boot/firmware
   ```
 
   The included initramfs script has already generated a `boot.img` disk image
@@ -109,8 +109,8 @@ The installation scripts can be re-run at any time by invoking the same script
   telling it to [load the ramdisk](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#boot_ramdisk):
   ```sh
   # note: replace this path if you are inside chroot
-  cp -f /mnt/boot/boot.img /boot/rpi/boot.img
-  echo "boot_ramdisk=1" > /boot/rpi/config.txt
+  cp -f /mnt/boot/boot.img /boot/firmware/boot.img
+  echo "boot_ramdisk=1" > /boot/firmware/config.txt
   ```
 
   Using this, you can also support boot failover configurations (TODO)!
