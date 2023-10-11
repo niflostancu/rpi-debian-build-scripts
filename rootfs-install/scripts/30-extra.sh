@@ -1,9 +1,9 @@
 #!/bin/bash
 # Extra config (custom scripts)
 
-if declare -f -F "custom_rootfs_script" >/dev/null; then
-    log_info "Running custom_rootfs_script..."
-    custom_rootfs_script
+if declare -f -F "rootfs_extra_script" >/dev/null; then
+    log_info "Running rootfs_extra_script..."
+    rootfs_extra_script
 fi
 
 # install extra packages either from repo or from .debs

@@ -22,7 +22,7 @@ function custom_provision_script() {
 }
 
 # Extra installation hook (to run custom scripts)
-function custom_rootfs_script() {
+function rootfs_extra_script() {
 	source "$CUSTOM_CONFIG_DIR/rootfs-extra-install.sh"
 }
 

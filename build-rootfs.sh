@@ -43,17 +43,16 @@ function debootstrap_stage2() {
     log_info "Running debootstrap stage 2..."
     "$SRC_DIR/chroot.sh" \
         /debootstrap/debootstrap --second-stage --verbose
-
-    # echo "$DEB_SOURCES" > "$MOUNTPOINT/etc/apt/sources.list"
 }
 
 function provision_rootfs() {
     local MOUNTPOINT="$1"
-    # copy self to the rootfs
-    $SUDO rsync -a --delete --chown root --chmod=755 --mkpath \
-        --exclude=".*" \
-        "$SRC_DIR/" \
-        "$MOUNTPOINT/root/rpi-provisioning/"
+    # copy provisioning files to the rootfs mountpoint
+    $SUDO rsync -a --delete --chown root --chmod=755 --mkpath --exclude=".*" \
+        "$SRC_DIR/" "$MOUNTPOINT/root/rpi-provisioning/"
+    if declare -f -F "custom_provision_script" >/dev/null; then
+        custom_provision_script "$MOUNTPOINT"
+    fi
     # run the install script
     "$SRC_DIR/chroot.sh" bash "/root/rpi-provisioning/rootfs-install/install.sh"
 }
