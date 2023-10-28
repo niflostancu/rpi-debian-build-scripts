@@ -9,10 +9,11 @@ source "$SRC_DIR/config.sh"
 ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 CHROOT_USER=${CHROOT_USER:-root}
 CHROOT_HOME=${CHROOT_HOME:-/root}
+CHROOT_LOOP_DEV=${CHROOT_LOOP_DEV:-/dev/loop8}
 NSPAWN_ARGS=(
     --as-pid2 --resolv-conf=copy-host
     --capability=CAP_MKNOD --capability=all
-    --bind=/dev/loop-control --bind=/dev/loop8
+    --bind=/dev/loop-control --bind=$CHROOT_LOOP_DEV
 )
 CHROOT_PATH=/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin
 CHROOT_ENV=(
@@ -49,9 +50,12 @@ log_debug systemd-nspawn "${NSPAWN_ARGS[@]}" -D "$ROOTFS_DEST" \
 
 # this is required for providing the rootfs with an usable loop device,
 # used for creating the build.img ramdisk from initrd hook.
-[[ -b "/dev/loop8" ]] || sudo mknod -m 0660 /dev/loop8 b 7 8 || true
-sudo losetup -d /dev/loop8 || true
+[[ -b "$CHROOT_LOOP_DEV" ]] || $SUDO mknod -m 0660 /dev/loop8 b 7 8 || true
+$SUDO losetup -d /dev/loop8 || true
 
 $SUDO systemd-nspawn "${NSPAWN_ARGS[@]}" -D "$ROOTFS_DEST" \
     env -i "${CHROOT_ENV[@]}" "$@"
+
+# forced cleanup
+$SUDO losetup -d /dev/loop8 2>/dev/null || true
 
