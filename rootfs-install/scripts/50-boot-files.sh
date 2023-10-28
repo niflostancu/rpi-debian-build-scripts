@@ -19,15 +19,6 @@ if [[ -n "$DROPBEAR_PORT" ]]; then
         /etc/dropbear/initramfs/dropbear.conf
 fi
 
-# debs to install
-KERNEL_PREFIXES=(linux-image- linux-headers- linux-libc-dev)
-
-KERNEL_FILE="$(shopt -s nullglob; cd "$DIST_DIR/"; files=( "${KERNEL_PREFIXES[0]}"*.deb ); echo "$files")"
-if [[ -z "$KERNEL_FILE" || ! -f "$DIST_DIR/$KERNEL_FILE" ]]; then
-    log_error "Unable to find kernel .debs inside $DIST_DIR!"
-    return 0
-fi
-
 # first, install initramfs generation hooks to generate boot.img
 # https://kernel-team.pages.debian.net/kernel-handbook/ch-update-hooks.html
 install -oroot -m755 -d /etc/initramfs/post-update.d/
@@ -48,9 +39,19 @@ $([[ -z "$RPI_BOOT_EXTRA_FILES" ]] || declare -p RPI_BOOT_EXTRA_FILES)
 $([[ -z "$RPI_CONFIG_EXTRA" ]] || declare -p RPI_CONFIG_EXTRA)
 EOF
 
+# debs to install
+KERNEL_PREFIXES=(linux-image- linux-headers- linux-libc-dev)
+KERNEL_DIST_DIR="${KERNEL_DIST_DIR:-$DIST_DIR/kernel-$KERNEL_VERSION}"
+
+KERNEL_FILE="$(shopt -s nullglob; cd "$KERNEL_DIST_DIR/"; files=( "${KERNEL_PREFIXES[0]}"*.deb ); echo "$files")"
+if [[ -z "$KERNEL_FILE" || ! -f "$KERNEL_DIST_DIR/$KERNEL_FILE" ]]; then
+    log_error "Unable to find kernel .debs inside $KERNEL_DIST_DIR!"
+    return 0
+fi
+
 # [Re]Install kernel package (initramfs will be generated and hooks run)
 (
-    cd "$DIST_DIR/"
+    cd "$KERNEL_DIST_DIR/"
     KERNEL_FILES=()
     for prefix in "${KERNEL_PREFIXES[@]}"; do
         KERNEL_FILES+=( "$prefix"*.deb )
