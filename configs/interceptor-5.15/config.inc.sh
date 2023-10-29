@@ -8,6 +8,8 @@ KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"interceptor_defconfig"}
 
 # RPI firmware / boot files
 INTERCEPTOR_DTB=interceptor-rpi-cm4-$KERNEL_VERSION.dtb
+[[ -v RPI_FIRMWARE_FILES[@] ]] || \
+	RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-cm4.dtb)
 RPI_FIRMWARE_FILES+=(/boot/$INTERCEPTOR_DTB)
 RPI_CONFIG_EXTRA="device_tree=$INTERCEPTOR_DTB"$'\n'
 
