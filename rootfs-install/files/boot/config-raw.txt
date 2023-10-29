@@ -1,0 +1,2 @@
+boot_ramdisk=1
+

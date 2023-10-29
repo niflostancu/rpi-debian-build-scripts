@@ -65,6 +65,11 @@ $SUDO mount "${LO_DEV}p1" "$MOUNT_TMP$RPI_FIRMWARE_DIR"
 log_info "Copying files from '$ROOTFS_DEST/' to '$MOUNT_TMP/'"
 $SUDO rsync -a "$ROOTFS_DEST/" "$MOUNT_TMP/"
 
+[[ ! -f "$ROOTFS_DEST/boot/boot.img" ]] || \
+    $SUDO cp -f "$ROOTFS_DEST/boot/boot.img" "$MOUNT_TMP$RPI_FIRMWARE_DIR/boot.img"
+[[ ! -f "$ROOTFS_DEST/boot/config-raw.txt" ]] || \
+    $SUDO cp -f "$ROOTFS_DEST/boot/config-raw.txt" "$MOUNT_TMP$RPI_FIRMWARE_DIR/config.txt"
+
 log_debug $'RootFS files list: \n' "$(ls -lh "$MOUNT_TMP/")"
 log_debug $'Firmware files list: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
 $SUDO du -hs "$MOUNT_TMP"

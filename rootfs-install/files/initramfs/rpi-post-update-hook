@@ -1,6 +1,7 @@
 #!/bin/bash
 # Initramfs Post-Update hook to generate boot.img inside /boot
 set -eo pipefail
+source /usr/local/lib/rpi-debian-scripts.sh
 
 version="$1"
 if [[ -z "$version" ]]; then
@@ -9,6 +10,7 @@ if [[ -z "$version" ]]; then
 fi
 
 RPI_CONFIG_FILE=/etc/initramfs/rpi-config.txt
+RPI_CONFIG_RAW_FILE=/etc/initramfs/rpi-config-raw.txt
 RPI_CMDLINE_FILE=/etc/initramfs/rpi-cmdline.txt
 BOOT_IMG=/boot/boot.img
 BOOT_IMG_SIZE=32  # MB
@@ -48,12 +50,18 @@ for file in "${RPI_FIRMWARE_FILES[@]}"; do
 done
 
 RPI_CONFIG=$(cat "$RPI_CONFIG_FILE")
+RPI_CONFIG_RAW=$(cat "$RPI_CONFIG_RAW_FILE")
 RPI_CMDLINE=$(cat "$RPI_CMDLINE_FILE" | head -1)
 [[ -z "$RPI_CONFIG_EXTRA" ]] || RPI_CONFIG+="
 $RPI_CONFIG_EXTRA"
 [[ -z "$RPI_CMDLINE_EXTRA" ]] || RPI_CMDLINE+=" $RPI_CMDLINE_EXTRA"
-echo "$RPI_CONFIG" > "$BOOT_MOUNTPOINT/config.txt"
-echo "$RPI_CMDLINE" > "$BOOT_MOUNTPOINT/cmdline.txt"
+
+INTERPOLATE_VARS=(
+	"ROOTFS_PARTITION=LABEL=$IMAGE_ROOTFS_PART_NAME"
+)
+interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$BOOT_MOUNTPOINT/config.txt"
+interpolate_vars "$RPI_CONFIG_RAW" "${INTERPOLATE_VARS[@]}" > "/boot/config-raw.txt"
+interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$BOOT_MOUNTPOINT/cmdline.txt"
 # cat "$BOOT_MOUNTPOINT/config.txt"
 # cat "$BOOT_MOUNTPOINT/cmdline.txt"
 
