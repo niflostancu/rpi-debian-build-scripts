@@ -5,20 +5,16 @@
 set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
-source "$SRC_DIR/config.sh"
 
 # image builder options
-ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
-IMAGE_DEST=${IMAGE_DEST:-"$BUILD_DEST/image.bin"}
+[[ -n "$ROOTFS_DEST" ]] || log_fatal "No ROOTFS_DEST given!"
+[[ -n "$IMAGE_DEST" ]] || log_fatal "No IMAGE_DEST given!"
 MOUNT_TMP="${MOUNT_TMP:-/tmp/rpi.mount}"
-FIRMWARE_DIR="/boot/firmware"
-IMAGE_SIZE_MB=${IMAGE_SIZE_MB:-"2048"}
-BOOT_PART_MB=${BOOT_PART_MB:-"100"}
 
 _lo_umount() {
     if [[ "$0" != "--force" && "$DEBUG" -gt 2 ]]; then return 0; fi
     log_info "Unmounting loopback device..."
-    mountpoint -q "$MOUNT_TMP$FIRMWARE_DIR" && $SUDO umount "$MOUNT_TMP$FIRMWARE_DIR" || true
+    mountpoint -q "$MOUNT_TMP$RPI_FIRMWARE_DIR" && $SUDO umount "$MOUNT_TMP$RPI_FIRMWARE_DIR" || true
     mountpoint -q "$MOUNT_TMP" && $SUDO umount "$MOUNT_TMP" || true
     if [[ -n "$LO_DEV" ]]; then
         $SUDO losetup -d "$LO_DEV"
@@ -30,7 +26,7 @@ if [[ "$1" =~ ^(-u|--un?mount)$ ]]; then _lo_umount --force; exit 0; fi
 dd if=/dev/zero of="$IMAGE_DEST" bs=1M count="$IMAGE_SIZE_MB"
 
 _PARTED_BOOT_START=1
-_PARTED_BOOT_END=$(( "$BOOT_PART_MB" + "$_PARTED_BOOT_START" ))
+_PARTED_BOOT_END=$(( "$IMAGE_BOOT_PART_MB" + "$_PARTED_BOOT_START" ))
 _PARTED_ROOTFS_END=$(( "$IMAGE_SIZE_MB" + "$_PARTED_BOOT_END" ))
 
 log_info "Creating partitions..."
@@ -55,24 +51,24 @@ if [[ ! -b "${LO_DEV}p1" || ! -b "${LO_DEV}p2" ]]; then
 fi
 
 log_info "Formatting partitions..."
-$SUDO mkfs.vfat -n 'RPI_BOOT' "${LO_DEV}p1"
-$SUDO mkfs.ext4 -L 'RPI_ROOTFS' "${LO_DEV}p2"
+$SUDO mkfs.vfat -n "$IMAGE_BOOT_PART_NAME" "${LO_DEV}p1"
+$SUDO mkfs.ext4 -L "$IMAGE_ROOTFS_PART_NAME" "${LO_DEV}p2"
 
 # use the /boot/firmware convention to split partitions
 $SUDO mkdir -p "$MOUNT_TMP"
 log_debug "mount ${LO_DEV}p2 $MOUNT_TMP"
 $SUDO mount "${LO_DEV}p2" "$MOUNT_TMP"
-$SUDO mkdir -p "$MOUNT_TMP$FIRMWARE_DIR"
-log_debug "mount ${LO_DEV}p1 $MOUNT_TMP$FIRMWARE_DIR"
-$SUDO mount "${LO_DEV}p1" "$MOUNT_TMP$FIRMWARE_DIR"
+$SUDO mkdir -p "$MOUNT_TMP$RPI_FIRMWARE_DIR"
+log_debug "mount ${LO_DEV}p1 $MOUNT_TMP$RPI_FIRMWARE_DIR"
+$SUDO mount "${LO_DEV}p1" "$MOUNT_TMP$RPI_FIRMWARE_DIR"
 
 log_info "Copying files from '$ROOTFS_DEST/' to '$MOUNT_TMP/'"
 $SUDO rsync -a "$ROOTFS_DEST/" "$MOUNT_TMP/"
 
 log_debug $'RootFS files list: \n' "$(ls -lh "$MOUNT_TMP/")"
-log_debug $'Firmware files list: \n' "$(ls -lh "$MOUNT_TMP$FIRMWARE_DIR")"
+log_debug $'Firmware files list: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
 $SUDO du -hs "$MOUNT_TMP"
-$SUDO du -hs "$MOUNT_TMP$FIRMWARE_DIR"
+$SUDO du -hs "$MOUNT_TMP$RPI_FIRMWARE_DIR"
 
 echo "Successfully generated image!"
 ls -l "$IMAGE_DEST"

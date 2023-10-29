@@ -40,7 +40,19 @@ included for Vagrant ;) )!
 The kernel and the rootfs are built separately, though the final stages
 of the provisioning scripts require a kernel `.deb` package to be present.
 
-First, copy `config.sample.sh` as `config.sh` and change your desired options.
+First, read (but don't modify!) through `config.default.sh` for a list of the available variables. 
+If you want to customize them, simply create `config.sh` and set your desired options.
+
+Additionally, you can use a predefined configuration overlay: check out the
+[`configs/`](./configs/) directory; choose one, then set / export the
+`CUSTOM_CONFIG` environment variable with the name of the configuration
+/ board's directory, e.g.:
+
+```sh
+export CUSTOM_CONFIG="interceptor-5.15"
+```
+
+### Kernel
 
 To compile the kernel, use a Debian-based system with kernel dependencies
 installed.
@@ -49,16 +61,34 @@ a Debian-based VM).
 Then, simply: `./build-kernel.sh`!
 
 After building the kernel, please do a manual copy of the obtained `*.deb`
-packages to the `dist/` directory in here (create it if it doesn't exist, as it
-is gitignored). The `build-rootfs.sh` script will look there during the install
-phase (see [50-boot-files.sh](rootfs-install/scripts/50-boot-files.sh)).
+packages to the `dist/kernel-<version>` subdirectory in here (create it if it
+doesn't exist, as it is gitignored). The `build-rootfs.sh` script will look
+there during the install phase (see [50-boot-files.sh](rootfs-install/scripts/50-boot-files.sh)).
+
+### RootFS
 
 For building the rootfs, the `build-rootfs.sh` script will run all bootstrapping
 and provisioning stages.
 The installation scripts can be re-run at any time by invoking the same script
 (scripts were designed for idempotence, i.e. not doing the same thing again).
 
-## Deploying to RaspberryPi boot media
+### Image
+
+The `build-image.sh` script should obtain a raw bootable image (with two
+partitions: a FAT32 with RPI boot files, and the ext4 rootfs).
+
+You might wish to customize your boot media, see the next section for details.
+
+### U-Boot (optional)
+
+If you wish to build a custom u-boot BL31 loader for your RaspberryPi, start by
+checking out the `build-uboot.sh` script!
+
+## Advanced usage
+
+For advanced use cases, read below:
+
+### Manually deploying to RaspberryPi boot media
 
 0. Make sure you understand the [RPI4 boot
   process](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-4-boot-flow).
@@ -148,9 +178,9 @@ Additional steps must be taken for a LUKS-based setup (on the live RPI distro):
 - Finally, run `update-initramfs -u` to re-generate the initial ramdisk and copy
   the `boot.img` to the boot partition (as in Step. 5).
 
-### Frequently asked questions / Workarounds
+## Frequently asked questions / Workarounds
 
-#### Temporary failure in name resolution
+### Temporary failure in name resolution
 
 Unfortunately, `systemd-nspawn` overwrites the `/etc/resolv.conf` file. If you
 want to use `systemd-resolved` as DNS resolver, [take a look

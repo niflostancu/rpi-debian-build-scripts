@@ -5,12 +5,11 @@ CLEAN=1
 set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
-source "$SRC_DIR/config.sh"
 
-UBOOT_DEST=${UBOOT_DEST:-"$BUILD_DEST/u-boot"}
+[[ -n "$UBOOT_DEST" ]] || log_fatal "No UBOOT_DEST given!"
 UBOOT_GIT=${UBOOT_GIT:-"https://github.com/u-boot/u-boot.git"}
-UBOOT_BRANCH=${UBOOT_BRANCH:-"v2023.07.02"}
-UBOOT_DEFCONFIG=${UBOOT_DEFCONFIG:-"rpi_4_defconfig"}
+UBOOT_BRANCH=${UBOOT_BRANCH:-"unknown_branch"}
+UBOOT_DEFCONFIG=${UBOOT_DEFCONFIG:-"unknown_defconfig"}
 UBOOT_MAKE_THREADS=${UBOOT_MAKE_THREADS:-4}
 
 if [[ ! -d "$UBOOT_DEST" ]]; then

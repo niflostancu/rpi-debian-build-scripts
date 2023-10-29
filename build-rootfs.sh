@@ -5,14 +5,13 @@
 set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
-source "$SRC_DIR/config.sh"
 
-ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
-DEB_ARCH="arm64"
-DEB_VERSION="bookworm"
-DEB_INSTALL_BASE_PKGS="ca-certificates,"
-DEB_PROXY="http://ftp.de.debian.org/debian"
-QEMU_ARCH="aarch64"
+[[ -n "$ROOTFS_DEST" ]] || log_fatal "No ROOTFS_DEST given!"
+DEB_ARCH=${DEB_ARCH:-"arm64"}
+DEB_VERSION=${DEB_VERSION:-"bookworm"}
+DEB_INSTALL_BASE_PKGS=${DEB_INSTALL_BASE_PKGS:-"ca-certificates,"}
+DEB_PROXY=${DEB_PROXY:-"http://ftp.de.debian.org/debian"}
+QEMU_ARCH=${QEMU_ARCH:-"aarch64"}
 
 # Runs debootstrap stage 1 (bare rootfs creation)
 function debootstrap_stage1() {

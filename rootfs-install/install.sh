@@ -7,7 +7,6 @@ INSTALL_SRC="$SRC_DIR/rootfs-install"
 DIST_DIR="$SRC_DIR/dist"
 
 source "$SRC_DIR/lib/common.sh"
-source "$SRC_DIR/config.sh"
 
 # dependencies
 source "$SRC_DIR/lib/packages.sh"

@@ -4,9 +4,7 @@
 set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
-source "$SRC_DIR/config.sh"
 
-ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 CHROOT_USER=${CHROOT_USER:-root}
 CHROOT_HOME=${CHROOT_HOME:-/root}
 CHROOT_LOOP_DEV=${CHROOT_LOOP_DEV:-/dev/loop8}
@@ -36,6 +34,8 @@ while [[ $# > 0 ]]; do
     esac
     shift
 done
+
+[[ -n "$ROOTFS_DEST" ]] || log_fatal "No ROOTFS_DEST given!"
 
 # default chroot command
 if [[ "$#" == 0 ]]; then

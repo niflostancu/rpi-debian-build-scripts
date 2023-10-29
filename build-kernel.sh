@@ -4,13 +4,12 @@
 set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
-source "$SRC_DIR/config.sh"
 
-KERNEL_DEST=${KERNEL_DEST:-"$BUILD_DEST/kernel-build"}
-KERNEL_BRANCH=${KERNEL_BRANCH:-"rpi-5.15.y"}
+[[ -n "$KERNEL_DEST" ]] || log_fatal "No KERNEL_DEST given!"
+KERNEL_BRANCH=${KERNEL_BRANCH:-"unknown_branch"}
 KERNEL_ARCH=${KERNEL_ARCH:-"arm64"}
-KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"bcm2711_defconfig"}
-KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi-nas'}
+KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"unknown_defconfig"}
+KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi'}
 
 if [[ ! -d "$KERNEL_DEST" ]]; then
     mkdir -p "$(dirname "$KERNEL_DEST")"
