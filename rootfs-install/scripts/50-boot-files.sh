@@ -9,7 +9,7 @@ apt_install initramfs-tools cryptsetup console-setup dropbear-initramfs \
 # boot-related configuration files
 [[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]] || \
     DROPBEAR_AUTHORIZED_KEYS="$DIST_DIR/authorized_keys"
-if [[ -n "$DROPBEAR_AUTHORIZED_KEYS" ]]; then
+if [[ -n "$DROPBEAR_AUTHORIZED_KEYS" && -f "$DROPBEAR_AUTHORIZED_KEYS" ]]; then
     mkdir -p /etc/dropbear/initramfs
     install -oroot -m755 "$DROPBEAR_AUTHORIZED_KEYS" "/etc/dropbear/initramfs/authorized_keys"
 fi
