@@ -19,6 +19,36 @@ BOOT_MOUNTPOINT=/tmp/rpi-boot-img
 # read config vars
 source /etc/initramfs/rpi-vars.sh
 
+RPI_CONFIG=$(cat "$RPI_CONFIG_FILE")
+RPI_CONFIG_RAW=$(cat "$RPI_CONFIG_RAW_FILE")
+RPI_CMDLINE=$(cat "$RPI_CMDLINE_FILE" | head -1)
+[[ -z "$RPI_CONFIG_EXTRA" ]] || RPI_CONFIG+="
+$RPI_CONFIG_EXTRA"
+[[ -z "$RPI_CMDLINE_EXTRA" ]] || RPI_CMDLINE+=" $RPI_CMDLINE_EXTRA"
+
+INTERPOLATE_VARS=(
+	"ROOTFS_PARTITION=LABEL=$IMAGE_ROOTFS_PART_NAME"
+)
+
+function download_firmware_files() {
+	for file in "${RPI_FIRMWARE_FILES[@]}"; do
+		if [[ "$file" == "/"* ]]; then
+			# absolute path, copy it
+			cp -f "$file" "$1/$(basename "$file")"
+		else
+			# download the latest rpi firmware files (debian repo is outdated)
+			wget "https://github.com/raspberrypi/firmware/raw/master/boot/$file" \
+				-O "$1/$file"
+		fi
+	done
+}
+
+if [[ -n "$RPI_SKIP_IMAGE_GEN" ]]; then
+	# save config.txt to /boot
+	interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "/boot/config.txt"
+	exit 0
+fi
+
 echo "Running RPI ramdisk generator for version $version..."
 
 dd if=/dev/zero bs=1M count=$BOOT_IMG_SIZE of="$BOOT_IMG"
@@ -38,27 +68,8 @@ mount /dev/loop8 "$BOOT_MOUNTPOINT"
 
 install "/boot/vmlinuz-$version" "$BOOT_MOUNTPOINT/kernel8.img"
 install "/boot/initrd.img-$version" "$BOOT_MOUNTPOINT/initrd.img"
-for file in "${RPI_FIRMWARE_FILES[@]}"; do
-	if [[ "$file" == "/"* ]]; then
-		# absolute path, copy it
-		cp -f "$file" "$BOOT_MOUNTPOINT/$(basename "$file")"
-	else
-		# download the latest rpi firmware files (debian repo is outdated)
-		wget "https://github.com/raspberrypi/firmware/raw/master/boot/$file" \
-			-O "$BOOT_MOUNTPOINT/$file"
-	fi
-done
+download_firmware_files "$BOOT_MOUNTPOINT/"
 
-RPI_CONFIG=$(cat "$RPI_CONFIG_FILE")
-RPI_CONFIG_RAW=$(cat "$RPI_CONFIG_RAW_FILE")
-RPI_CMDLINE=$(cat "$RPI_CMDLINE_FILE" | head -1)
-[[ -z "$RPI_CONFIG_EXTRA" ]] || RPI_CONFIG+="
-$RPI_CONFIG_EXTRA"
-[[ -z "$RPI_CMDLINE_EXTRA" ]] || RPI_CMDLINE+=" $RPI_CMDLINE_EXTRA"
-
-INTERPOLATE_VARS=(
-	"ROOTFS_PARTITION=LABEL=$IMAGE_ROOTFS_PART_NAME"
-)
 interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$BOOT_MOUNTPOINT/config.txt"
 interpolate_vars "$RPI_CONFIG_RAW" "${INTERPOLATE_VARS[@]}" > "/boot/config-raw.txt"
 interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$BOOT_MOUNTPOINT/cmdline.txt"

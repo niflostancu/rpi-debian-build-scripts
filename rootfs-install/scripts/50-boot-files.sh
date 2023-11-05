@@ -40,6 +40,7 @@ $([[ -z "$IMAGE_ROOTFS_PART_NAME" ]] || declare -p IMAGE_ROOTFS_PART_NAME)
 $([[ -z "$RPI_FIRMWARE_FILES" ]] || declare -p RPI_FIRMWARE_FILES)
 $([[ -z "$RPI_BOOT_EXTRA_FILES" ]] || declare -p RPI_BOOT_EXTRA_FILES)
 $([[ -z "$RPI_CONFIG_EXTRA" ]] || declare -p RPI_CONFIG_EXTRA)
+$([[ -z "$RPI_SKIP_IMAGE_GEN" ]] || declare -p RPI_SKIP_IMAGE_GEN)
 EOF
 
 # debs to install
