@@ -45,7 +45,9 @@ function download_firmware_files() {
 
 if [[ -n "$RPI_SKIP_IMAGE_GEN" ]]; then
 	# save config.txt to /boot
-	interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "/boot/config.txt"
+	mkdir -p /boot/firmware
+	download_firmware_files "/boot/firmware"
+	interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "/boot/firmware/config.txt"
 	exit 0
 fi
 
