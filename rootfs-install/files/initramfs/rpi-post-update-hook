@@ -37,6 +37,7 @@ function download_firmware_files() {
 			cp -f "$file" "$1/$(basename "$file")"
 		else
 			# download the latest rpi firmware files (debian repo is outdated)
+			mkdir -p "$1/$(dirname "$file")"
 			wget "https://github.com/raspberrypi/firmware/raw/master/boot/$file" \
 				-O "$1/$file"
 		fi
