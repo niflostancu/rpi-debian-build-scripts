@@ -70,6 +70,12 @@ $SUDO rsync -a "$ROOTFS_DEST/" "$MOUNT_TMP/"
 [[ ! -f "$ROOTFS_DEST/boot/config-raw.txt" ]] || \
     $SUDO cp -f "$ROOTFS_DEST/boot/config-raw.txt" "$MOUNT_TMP$RPI_FIRMWARE_DIR/config.txt"
 
+# rootfs install hook
+if declare -f -F "image_build_hook" >/dev/null; then
+    log_info "Running image_build_hook..."
+    image_build_hook "$MOUNT_TMP"
+fi
+
 log_debug $'RootFS files list: \n' "$(ls -lh "$MOUNT_TMP/")"
 log_debug $'Firmware files list: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
 $SUDO du -hs "$MOUNT_TMP"
