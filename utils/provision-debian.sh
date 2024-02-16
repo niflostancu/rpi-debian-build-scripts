@@ -9,7 +9,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 # build tools
 apt-get -y install git curl build-essential fakeroot crossbuild-essential-arm64 \
-    debootstrap binfmt-support qemu-user-static
+    debootstrap binfmt-support qemu-user-static device-tree-compiler
 # linux kernel build dependencies
 apt-get -y install bc bison flex libssl-dev libncurses5-dev xz-utils cpio \
     debhelper-compat dh-exec dh-python quilt
