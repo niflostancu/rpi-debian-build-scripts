@@ -11,10 +11,17 @@ KERNEL_ARCH=${KERNEL_ARCH:-"arm64"}
 KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"unknown_defconfig"}
 KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi'}
 
+if [[ -z "$KERNEL_GIT_URL" ]]; then
+    KERNEL_GIT_URL="https://github.com/raspberrypi/linux"
+    if [[ "$KERNEL_USE_MAINLINE" == "1" ]]; then
+        KERNEL_GIT_URL="https://github.com/torvalds/linux"
+    fi
+fi
+
 if [[ ! -d "$KERNEL_DEST" ]]; then
     mkdir -p "$(dirname "$KERNEL_DEST")"
-    git clone --depth=1 https://github.com/raspberrypi/linux \
-        --branch "$KERNEL_BRANCH" --single-branch "$KERNEL_DEST"
+    git clone --depth=1 "$KERNEL_GIT_URL" --branch "$KERNEL_BRANCH" \
+        --single-branch "$KERNEL_DEST"
 fi
 
 cd "$KERNEL_DEST"
@@ -36,6 +43,8 @@ if [[ "$CLEAN" == "1" ]]; then
 fi
 
 MAKE_ARGS=(ARCH="$KERNEL_ARCH" CROSS_COMPILE="$CROSS_COMPILER")
+KERNEL_MAKE_GOALS=(Image modules dtbs)
+KERNEL_PACKAGE_GOALS=(bindeb-pkg)
 
 # kernel configuration phase
 make "${MAKE_ARGS[@]}" "$KERNEL_DEFCONFIG"
@@ -43,9 +52,23 @@ if [[ -n "$KERNEL_LOCALVERSION" ]]; then
     ./scripts/config --set-str LOCALVERSION "$KERNEL_LOCALVERSION"
 fi
 
+# kernel build hook
+if declare -f -F "kernel_build_hook" >/dev/null; then
+    log_info "Running kernel_build_hook..."
+    kernel_build_hook "$KERNEL_DEST"
+fi
+
 # compilation phase
-make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" Image modules dtbs
+make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_MAKE_GOALS[@]}"
 
 # finally: generate .dep with binaries
-make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" bindeb-pkg
+make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_PACKAGE_GOALS[@]}"
+
+# kernel distribute hook
+if declare -f -F "kernel_dist_hook" >/dev/null; then
+    log_info "Running kernel_dist_hook..."
+    kernel_dist_hook "$KERNEL_DEST"
+fi
+
+log_info "Kernel build finished!"
 
