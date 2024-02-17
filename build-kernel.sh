@@ -14,7 +14,7 @@ KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi'}
 if [[ -z "$KERNEL_GIT_URL" ]]; then
     KERNEL_GIT_URL="https://github.com/raspberrypi/linux"
     if [[ "$KERNEL_USE_MAINLINE" == "1" ]]; then
-        KERNEL_GIT_URL="https://github.com/torvalds/linux"
+        KERNEL_GIT_URL="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
     fi
 fi
 
