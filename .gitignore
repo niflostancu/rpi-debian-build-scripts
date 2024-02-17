@@ -1,5 +1,6 @@
 # local customization files
 config.sh
+.env
 
 # tmp files
 .vagrant

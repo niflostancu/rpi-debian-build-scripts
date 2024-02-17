@@ -6,6 +6,8 @@ vm_cpus = ENV['VM_NUM_CPUS'] || 4
 vm_memory = ENV['VM_MEMORY'] || '4096'
 
 Vagrant.configure('2') do |config|
+  config.env.enable
+
   # we need a Debian-like distro for kernel .deb generation
   config.vm.box = 'debian/bookworm64'
 
