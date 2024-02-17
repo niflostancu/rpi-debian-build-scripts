@@ -44,9 +44,8 @@ $([[ -z "$RPI_SKIP_IMAGE_GEN" ]] || declare -p RPI_SKIP_IMAGE_GEN)
 EOF
 
 # debs to install
-KERNEL_PREFIXES=(linux-image- linux-headers- linux-libc-dev)
-
-KERNEL_FILE="$(shopt -s nullglob; cd "$KERNEL_DISTRIB_DIR/"; files=( "${KERNEL_PREFIXES[0]}"*.deb ); echo "$files")"
+KERNEL_PKG_PREFIXES=(linux-image- linux-headers-)
+KERNEL_FILE="$(shopt -s nullglob; cd "$KERNEL_DISTRIB_DIR/"; files=( "${KERNEL_PKG_PREFIXES[0]}"*.deb ); echo "$files")"
 if [[ -z "$KERNEL_FILE" || ! -f "$KERNEL_DISTRIB_DIR/$KERNEL_FILE" ]]; then
     log_error "Unable to find kernel .debs inside $KERNEL_DISTRIB_DIR!"
     return 0
@@ -56,8 +55,13 @@ fi
 (
     cd "$KERNEL_DISTRIB_DIR/"
     KERNEL_FILES=()
-    for prefix in "${KERNEL_PREFIXES[@]}"; do
-        KERNEL_FILES+=( "$prefix"*.deb )
+    for prefix in "${KERNEL_PKG_PREFIXES[@]}"; do
+        _FIND_ARGS=(-name "$prefix*" -not -iname '*-dbg_*')
+        _KERNEL_FILE=$( find . "${_FIND_ARGS[@]}" | sort -r --version-sort | head -1 )
+        if [[ -z "$_KERNEL_FILE" ]]; then
+            log_error "Coult not find package for $prefix !"
+        fi
+        KERNEL_FILES+=("$_KERNEL_FILE")
     done
     log_debug dpkg -i "${KERNEL_FILES[@]}"
     dpkg -i "${KERNEL_FILES[@]}"
