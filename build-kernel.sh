@@ -53,7 +53,9 @@ KERNEL_PACKAGE_GOALS=(bindeb-pkg)
 # kernel configuration phase
 make "${MAKE_ARGS[@]}" "$KERNEL_DEFCONFIG"
 if [[ -n "$KERNEL_LOCALVERSION" ]]; then
-    ./scripts/config --set-str LOCALVERSION "$KERNEL_LOCALVERSION"
+    ./scripts/config --set-str LOCALVERSION ""
+    sed -i "s|CONFIG_LOCALVERSION_AUTO=.*|CONFIG_LOCALVERSION_AUTO=n|" .config
+    export LOCALVERSION="$KERNEL_LOCALVERSION"
     log_info "Using LOCALVERSION='$KERNEL_LOCALVERSION'"
 fi
 
