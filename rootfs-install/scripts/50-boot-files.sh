@@ -45,17 +45,16 @@ EOF
 
 # debs to install
 KERNEL_PREFIXES=(linux-image- linux-headers- linux-libc-dev)
-KERNEL_DIST_DIR="${KERNEL_DIST_DIR:-$DIST_DIR/kernel-$KERNEL_VERSION}"
 
-KERNEL_FILE="$(shopt -s nullglob; cd "$KERNEL_DIST_DIR/"; files=( "${KERNEL_PREFIXES[0]}"*.deb ); echo "$files")"
-if [[ -z "$KERNEL_FILE" || ! -f "$KERNEL_DIST_DIR/$KERNEL_FILE" ]]; then
-    log_error "Unable to find kernel .debs inside $KERNEL_DIST_DIR!"
+KERNEL_FILE="$(shopt -s nullglob; cd "$KERNEL_DISTRIB_DIR/"; files=( "${KERNEL_PREFIXES[0]}"*.deb ); echo "$files")"
+if [[ -z "$KERNEL_FILE" || ! -f "$KERNEL_DISTRIB_DIR/$KERNEL_FILE" ]]; then
+    log_error "Unable to find kernel .debs inside $KERNEL_DISTRIB_DIR!"
     return 0
 fi
 
 # [Re]Install kernel package (initramfs will be generated and hooks run)
 (
-    cd "$KERNEL_DIST_DIR/"
+    cd "$KERNEL_DISTRIB_DIR/"
     KERNEL_FILES=()
     for prefix in "${KERNEL_PREFIXES[@]}"; do
         KERNEL_FILES+=( "$prefix"*.deb )

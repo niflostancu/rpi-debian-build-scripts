@@ -14,13 +14,18 @@ CROSS_COMPILER=${CROSS_COMPILER:-"aarch64-linux-gnu-"}
 # sudo-like utility to use (when root privileges are required)
 SUDO=${SUDO:-sudo}
 
+# distro build / config suffix
+[[ -n "$DISTRO_SUFFIX" ]] || DISTRO_SUFFIX="${CUSTOM_CONFIG:+-${CUSTOM_CONFIG}}"
 # destination dirs (note: you need ~5GB of free disk space in here)
-BUILD_DEST=${BUILD_DEST:-"/tmp/rpi-debian${CUSTOM_CONFIG:+-${CUSTOM_CONFIG}}"}
+BUILD_DEST=${BUILD_DEST:-"/tmp/rpi-debian$DISTRO_SUFFIX"}
 # Note: you can leave those as they are automatically derived from BUILD_DEST
 ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 KERNEL_DEST=${KERNEL_DEST-"$BUILD_DEST/kernel-build"}
 UBOOT_DEST=${UBOOT_DEST:-"$BUILD_DEST/u-boot"}
 IMAGE_DEST=${IMAGE_DEST:-"$BUILD_DEST/image.bin"}
+
+# directory to be used for distributing built kernel files
+KERNEL_DISTRIB_DIR=${KERNEL_DISTRIB_DIR:-"$SRC_DIR/dist/kernel$DISTRO_SUFFIX"}
 
 # --------------------------------------------------
 # U-Boot build options

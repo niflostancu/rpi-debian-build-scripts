@@ -5,6 +5,10 @@ set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
 source "$SRC_DIR/lib/common.sh"
 
+# env / cmdline args
+SKIP_BUILD="${SKIP_BUILD:-1}"
+
+# config variables
 [[ -n "$KERNEL_DEST" ]] || log_fatal "No KERNEL_DEST given!"
 KERNEL_BRANCH=${KERNEL_BRANCH:-"unknown_branch"}
 KERNEL_ARCH=${KERNEL_ARCH:-"arm64"}
@@ -50,6 +54,7 @@ KERNEL_PACKAGE_GOALS=(bindeb-pkg)
 make "${MAKE_ARGS[@]}" "$KERNEL_DEFCONFIG"
 if [[ -n "$KERNEL_LOCALVERSION" ]]; then
     ./scripts/config --set-str LOCALVERSION "$KERNEL_LOCALVERSION"
+    log_info "Using LOCALVERSION='$KERNEL_LOCALVERSION'"
 fi
 
 # kernel build hook
@@ -59,15 +64,39 @@ if declare -f -F "kernel_build_hook" >/dev/null; then
 fi
 
 # compilation phase
-make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_MAKE_GOALS[@]}"
+if [[ -z "$SKIP_BUILD" ]]; then
+    make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_MAKE_GOALS[@]}"
+fi
 
-# finally: generate .dep with binaries
+# generate binary packages
 make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_PACKAGE_GOALS[@]}"
+# distribute packages
+KERNEL_PACKAGE_PATTERNS=("linux-image-*.deb" "linux-headers-*.deb" "linux-libc-dev*.deb")
+function def_kernel_dist_hook() {
+    # note: don't use local vars due to subshell invocations
+    local _FIND_ARGS=()
+    local _DIST_FILES=()
+    for pat in "${KERNEL_PACKAGE_PATTERNS[@]}"; do
+        [[ "${#_FIND_ARGS[@]}" == '0' ]] || _FIND_ARGS+=('-or')
+        _FIND_ARGS+=(-name "$pat")
+    done
+    log_debug "find args: ${_FIND_ARGS[@]}"
+    # note: kernel package target outputs its files to build parent dir
+    mapfile -d '' _DIST_FILES < <(find ../ '(' "${_FIND_ARGS[@]}" ')' -print0)
+    log_debug "Dist files: ${_DIST_FILES[@]}"
+    mkdir -p "$KERNEL_DISTRIB_DIR/"
+    for file in "${_DIST_FILES[@]}"; do
+        log_debug "dist: $file"
+        cp -f "$file" "$KERNEL_DISTRIB_DIR/"
+    done
+}
 
 # kernel distribute hook
 if declare -f -F "kernel_dist_hook" >/dev/null; then
     log_info "Running kernel_dist_hook..."
     kernel_dist_hook "$KERNEL_DEST"
+else
+    def_kernel_dist_hook
 fi
 
 log_info "Kernel build finished!"
