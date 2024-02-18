@@ -24,9 +24,6 @@ KERNEL_DEST=${KERNEL_DEST-"$BUILD_DEST/kernel-build"}
 UBOOT_DEST=${UBOOT_DEST:-"$BUILD_DEST/u-boot"}
 IMAGE_DEST=${IMAGE_DEST:-"$BUILD_DEST/image.bin"}
 
-# directory to be used for distributing built kernel files
-KERNEL_DISTRIB_DIR=${KERNEL_DISTRIB_DIR:-"$SRC_DIR/dist/kernel$DISTRO_SUFFIX"}
-
 # --------------------------------------------------
 # U-Boot build options
 # -----------------------------
@@ -48,6 +45,9 @@ KERNEL_MAKE_THREADS=${KERNEL_MAKE_THREADS:-4}
 #KERNEL_PATCHES_DIR="$CUSTOM_CONFIG_DIR/kernel-5.15"
 #KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi'}
 
+# directory to be used for distributing built kernel files
+KERNEL_DISTRIB_DIR=${KERNEL_DISTRIB_DIR:-"$SRC_DIR/dist/kernel$DISTRO_SUFFIX"}
+
 # --------------------------------------------------
 # RootFS provisioning options
 # (those are mostly used inside a chroot context)
@@ -67,19 +67,29 @@ RPI_CMDLINE_FILE=${RPI_CMDLINE_FILE:-"$INSTALL_SRC/files/boot/cmdline.txt"}
 # Path to the mounted RPI firmware
 RPI_FIRMWARE_DIR=${RPI_FIRMWARE_DIR:-"/boot/firmware"}
 
-# main user to create (it will have an empty password initially!)
-MAIN_USER=${MAIN_USER:-pi}
+# initramfs scripts configuration (`54-initramfs.sh`)
+#SKIP_INITRAMFS=
+#INITRAMFS_CRYPTROOT=0
+#INITRAMFS_DROPBEAR=0
+# kernel installation options (see `57-kernel.sh`)
+#SKIP_KERNEL=
+#KERNEL_FROM_REPO=auto
+#KERNEL_FROM_DEBS=auto
+#INSTALL_KERNEL_PACKAGES=(linux-image-arm64 linux-headers-arm64)
 
 # initramfs dropbear settings
 DROPBEAR_AUTHORIZED_KEYS=${DROPBEAR_AUTHORIZED_KEYS:-"$SRC_DIR/dist/authorized_keys"}
 DROPBEAR_PORT=${DROPBEAR_PORT:-2002}
+
+# main user to create (it will have an empty password initially!)
+MAIN_USER=${MAIN_USER:-pi}
 
 # --------------------------------------------------
 # Image build options
 # -----------------------------
 
 IMAGE_SIZE_MB=${IMAGE_SIZE_MB:-"2048"}
-IMAGE_BOOT_PART_MB=${BOOT_PART_MB:-"100"}
+IMAGE_BOOT_PART_MB=${IMAGE_BOOT_PART_MB:-"100"}
 IMAGE_ROOTFS_PART_NAME=${IMAGE_ROOTFS_PART_NAME:-"RPI_ROOTFS"}
 IMAGE_BOOT_PART_NAME=${IMAGE_BOOT_PART_NAME:-"RPI_BOOT"}
 

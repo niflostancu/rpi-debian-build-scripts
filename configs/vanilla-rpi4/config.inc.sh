@@ -1,8 +1,10 @@
 # Official firmware + kernel Debian configuration
 
 # install vanilla kernel & firmware
-EXTRA_PACKAGES=(raspi-firmware linux-image-generic linux-headers-generic linux-libc-dev)
-SKIP_BOOT_FILES=y
+INSTALL_KERNEL_PACKAGES=(linux-image-arm64 linux-headers-arm64)
+EXTRA_PACKAGES=(raspi-firmware linux-libc-dev)
+
+RPI_SKIP_IMAGE_GEN=1
 
 function rootfs_install_hook() {
 	# copy custom install scripts to exec. dir

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cleans up provisioning files
+# Cleans up tmp, packages & provisioning files
 
 apt-get --purge -y autoremove
 apt-get -y clean
