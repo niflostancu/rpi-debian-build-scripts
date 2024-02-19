@@ -5,12 +5,14 @@
 
 dtparam=i2c_vc=on
 arm_64bit=1
-initramfs initrd.img followkernel
 enable_uart=1
 otg_mode=1
 boot_delay=1
 disable_overscan=1
 disable_splash=1
+
+kernel={{CONFIG_KERNEL}}
+initramfs {{CONFIG_INITRD}} followkernel
 
 # include extra config ;)
 include extraconfig.txt

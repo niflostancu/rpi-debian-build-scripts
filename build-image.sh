@@ -65,10 +65,10 @@ $SUDO mount "${LO_DEV}p1" "$MOUNT_TMP$RPI_FIRMWARE_DIR"
 log_info "Copying files from '$ROOTFS_DEST/' to '$MOUNT_TMP/'"
 $SUDO rsync -a "$ROOTFS_DEST/" "$MOUNT_TMP/"
 
-[[ ! -f "$ROOTFS_DEST/boot/boot.img" ]] || \
+if [[ ! "$RPI_SKIP_BOOT_RAMDISK" =~ ^1|y(es)?$ ]]; then
     $SUDO cp -f "$ROOTFS_DEST/boot/boot.img" "$MOUNT_TMP$RPI_FIRMWARE_DIR/boot.img"
-[[ ! -f "$ROOTFS_DEST/boot/config-raw.txt" ]] || \
     $SUDO cp -f "$ROOTFS_DEST/boot/config-raw.txt" "$MOUNT_TMP$RPI_FIRMWARE_DIR/config.txt"
+fi
 
 # rootfs install hook
 if declare -f -F "image_build_hook" >/dev/null; then

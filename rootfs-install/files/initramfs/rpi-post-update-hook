@@ -12,9 +12,10 @@ fi
 RPI_CONFIG_FILE=/etc/initramfs/rpi-config.txt
 RPI_CONFIG_RAW_FILE=/etc/initramfs/rpi-config-raw.txt
 RPI_CMDLINE_FILE=/etc/initramfs/rpi-cmdline.txt
-BOOT_IMG=/boot/boot.img
-BOOT_IMG_SIZE=32  # MB
-BOOT_MOUNTPOINT=/tmp/rpi-boot-img
+RPI_FIRMWARE_DIR=/boot/firmware
+BOOTRD_IMG=/boot/boot.img
+BOOTRD_SIZE="${RPI_BOOT_RAMDISK_SIZE:-32}"  # MB
+BOOTRD_MOUNTPOINT=/tmp/rpi-boot-img
 
 # read config vars
 source /etc/initramfs/rpi-vars.sh
@@ -30,6 +31,7 @@ INTERPOLATE_VARS=(
 	"ROOTFS_PARTITION=LABEL=$IMAGE_ROOTFS_PART_NAME"
 )
 
+# Downloads external firmware files from raspberrypi/firmware
 function download_firmware_files() {
 	for file in "${RPI_FIRMWARE_FILES[@]}"; do
 		if [[ "$file" == "/"* ]]; then
@@ -44,18 +46,38 @@ function download_firmware_files() {
 	done
 }
 
-if [[ -n "$RPI_SKIP_IMAGE_GEN" ]]; then
-	# save config.txt to /boot
-	mkdir -p /boot/firmware
-	download_firmware_files "/boot/firmware"
-	interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "/boot/firmware/config.txt"
+# Builds the RPI firmware partition as configured by vars
+function build_firmware_partition() {
+	local DEST="$1"
+	# copy kernels
+	INTERPOLATE_VARS+=("CONFIG_KERNEL=vmlinuz-$version")
+	INTERPOLATE_VARS+=("CONFIG_INITRD=initrd.img-$version")
+	cp -f "/boot/vmlinuz-$version" "$DEST/"
+	cp -f "/boot/initrd.img-$version" "$DEST/"
+
+	if [[ ! "$RPI_FIRMWARE_DIR" =~ ^1|y(es)?$ ]]; then
+		download_firmware_files "$DEST"
+	fi
+	if [[ ! "$RPI_SKIP_BOOT_CONFIG" =~ ^1|y(es)?$ ]]; then
+		# save config txts to /boot/firmware
+		interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$DEST/config.txt"
+		interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$DEST/cmdline.txt"
+	fi
+}
+
+if [[ "$RPI_SKIP_BOOT_RAMDISK" =~ ^1|y(es)?$ ]]; then
+	log_info "Building firmware files in '$RPI_FIRMWARE_DIR' (ver. $version)"
+	mkdir -p "$RPI_FIRMWARE_DIR"
+	build_firmware_partition "$RPI_FIRMWARE_DIR"
+	log_debug $'Firmware dir contents: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
+	# aaand we're done!
 	exit 0
 fi
 
-echo "Running RPI ramdisk generator for version $version..."
+log_info "Running RPI ramdisk generator for version $version..."
 
-dd if=/dev/zero bs=1M count=$BOOT_IMG_SIZE of="$BOOT_IMG"
-losetup /dev/loop8 "$BOOT_IMG"
+dd if=/dev/zero bs=1M count=$BOOTRD_SIZE of="$BOOTRD_IMG"
+losetup /dev/loop8 "$BOOTRD_IMG"
 # close the loop device on every exit status using a trap
 cleanup() {
 	set +e
@@ -66,21 +88,16 @@ trap 'cleanup' EXIT
 
 # Format the boot img partition as FAT32
 mkfs.vfat -n RPI_BOOT_RD /dev/loop8
-mkdir -p "$BOOT_MOUNTPOINT"
-mount /dev/loop8 "$BOOT_MOUNTPOINT"
+mkdir -p "$BOOTRD_MOUNTPOINT"
+mount /dev/loop8 "$BOOTRD_MOUNTPOINT"
 
-install "/boot/vmlinuz-$version" "$BOOT_MOUNTPOINT/kernel8.img"
-install "/boot/initrd.img-$version" "$BOOT_MOUNTPOINT/initrd.img"
-download_firmware_files "$BOOT_MOUNTPOINT/"
+build_firmware_partition "$BOOTRD_MOUNTPOINT"
+if [[ ! "$RPI_SKIP_BOOT_CONFIG" =~ ^1|y(es)?$ ]]; then
+	interpolate_vars "$RPI_CONFIG_RAW" "${INTERPOLATE_VARS[@]}" > "/boot/config-raw.txt"
+fi
 
-interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$BOOT_MOUNTPOINT/config.txt"
-interpolate_vars "$RPI_CONFIG_RAW" "${INTERPOLATE_VARS[@]}" > "/boot/config-raw.txt"
-interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$BOOT_MOUNTPOINT/cmdline.txt"
-# cat "$BOOT_MOUNTPOINT/config.txt"
-# cat "$BOOT_MOUNTPOINT/cmdline.txt"
-
-echo "RPI boot ramdisk '$BOOT_IMG' successfull generated!"
-ls -lh "$BOOT_MOUNTPOINT"
+log_info "RPI boot ramdisk '$BOOTRD_IMG' successfull generated!"
+log_debug $'Boot ramdisk contents: \n' "$(ls -lh "$MOUNT_TMP$BOOTRD_MOUNTPOINT")"
 
 exit 0
 

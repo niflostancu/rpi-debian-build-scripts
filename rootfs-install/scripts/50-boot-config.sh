@@ -13,11 +13,15 @@ install -oroot -m755 "$RPI_CMDLINE_FILE" "/etc/initramfs/rpi-cmdline.txt"
 
 # save configuration vars
 cat << EOF > /etc/initramfs/rpi-vars.sh
+$([[ -z "$RPI_DISABLE_FIRMWARE_GEN" ]] || declare -p RPI_DISABLE_FIRMWARE_GEN)
 $([[ -z "$RPI_CMDLINE_EXTRA" ]] || declare -p RPI_CMDLINE_EXTRA)
 $([[ -z "$IMAGE_ROOTFS_PART_NAME" ]] || declare -p IMAGE_ROOTFS_PART_NAME)
 $([[ -z "$RPI_FIRMWARE_FILES" ]] || declare -p RPI_FIRMWARE_FILES)
-$([[ -z "$RPI_BOOT_EXTRA_FILES" ]] || declare -p RPI_BOOT_EXTRA_FILES)
 $([[ -z "$RPI_CONFIG_EXTRA" ]] || declare -p RPI_CONFIG_EXTRA)
-$([[ -z "$RPI_SKIP_IMAGE_GEN" ]] || declare -p RPI_SKIP_IMAGE_GEN)
+$([[ -z "$RPI_BOOT_EXTRA_FILES" ]] || declare -p RPI_BOOT_EXTRA_FILES)
+$([[ -z "$RPI_BOOT_RAMDISK_SIZE" ]] || declare -p RPI_BOOT_RAMDISK_SIZE)
+$([[ -z "$RPI_SKIP_BOOT_CONFIG" ]] || declare -p RPI_SKIP_BOOT_CONFIG)
+$([[ -z "$RPI_SKIP_BOOT_FIRMWARE" ]] || declare -p RPI_SKIP_BOOT_FIRMWARE)
+$([[ -z "$RPI_SKIP_BOOT_RAMDISK" ]] || declare -p RPI_SKIP_BOOT_RAMDISK)
 EOF
 
