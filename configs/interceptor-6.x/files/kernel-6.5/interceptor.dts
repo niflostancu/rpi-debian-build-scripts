@@ -1,0 +1,429 @@
+// SPDX-License-Identifier: GPL-2.0
+/dts-v1/;
+#include "arm/broadcom/bcm2711-rpi-cm4.dtsi"
+#include "arm/broadcom/bcm283x-rpi-led-deprecated.dtsi"
+#include "arm/broadcom/bcm283x-rpi-usb-host.dtsi"
+
+/ {
+	model = "Axzez Interceptor with Raspberry Pi CM4 module";
+
+	aliases {
+		mdio-gpio0 = &poe_mdio0;
+		mdio-gpio1 = &poe_mdio1;
+	};
+
+	chosen {
+		board = "interceptor-raspberrypi-cm4";
+	};
+
+	poe_mdio0: poe_mdio0 {
+		compatible = "virtual,mdio-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio 7 0>, <&gpio 6 6>;
+
+		poe_switch0: ip179h@0 {
+			compatible = "icplus,ip179h";
+			reg = <0x00>;
+			dsa,member = <0x01 0x00>;
+
+			ports {
+				#address-cells = <0x01>;
+				#size-cells = <0x00>;
+				port@0 {
+					reg = <0x00>;
+					label = "poe0-0";
+					phy-mode = "internal";
+				};
+				port@1 {
+					reg = <0x01>;
+					label = "poe0-1";
+					phy-mode = "internal";
+				};
+				port@2 {
+					reg = <0x02>;
+					label = "poe0-2";
+					phy-mode = "internal";
+				};
+				port@3 {
+					reg = <0x03>;
+					label = "poe0-3";
+					phy-mode = "internal";
+				};
+				port@4 {
+					reg = <0x04>;
+					label = "poe0-4";
+					phy-mode = "internal";
+				};
+				port@5 {
+					reg = <0x05>;
+					label = "poe0-5";
+					phy-mode = "internal";
+				};
+				port@6 {
+					reg = <0x06>;
+					label = "poe0-6";
+					phy-mode = "internal";
+				};
+				port@7 {
+					reg = <0x07>;
+					label = "poe0-7";
+					phy-mode = "internal";
+				};
+				port@8 {
+					reg = <0x08>;
+					label = "cpu";
+					ethernet = <&switch0_ext1>;
+					phy-mode = "rgmii-txid";
+					fixed-link {
+						speed = <0x3e8>;
+						full-duplex;
+					};
+				};
+			};
+		};
+	};
+
+	poe_mdio1: poe_mdio1 {
+		compatible = "virtual,mdio-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio 5 0>, <&gpio 4 6>;
+
+		poe_switch1: ip179h@0 {
+			compatible = "icplus,ip179h";
+			reg = <0x00>;
+			dsa,member = <0x02 0x00>;
+
+			ports {
+				#address-cells = <0x01>;
+				#size-cells = <0x00>;
+				port@0 {
+					reg = <0x00>;
+					label = "poe1-0";
+					phy-mode = "internal";
+				};
+				port@1 {
+					reg = <0x01>;
+					label = "poe1-1";
+					phy-mode = "internal";
+				};
+				port@2 {
+					reg = <0x02>;
+					label = "poe1-2";
+					phy-mode = "internal";
+				};
+				port@3 {
+					reg = <0x03>;
+					label = "poe1-3";
+					phy-mode = "internal";
+				};
+				port@4 {
+					reg = <0x04>;
+					label = "poe1-4";
+					phy-mode = "internal";
+				};
+				port@5 {
+					reg = <0x05>;
+					label = "poe1-5";
+					phy-mode = "internal";
+				};
+				port@6 {
+					reg = <0x06>;
+					label = "poe1-6";
+					phy-mode = "internal";
+				};
+				port@7 {
+					reg = <0x07>;
+					label = "poe1-7";
+					phy-mode = "internal";
+				};
+				port@8 {
+					reg = <0x08>;
+					label = "cpu";
+					ethernet = <&switch0_ext2>;
+					phy-mode = "rgmii-txid";
+					fixed-link {
+						speed = <0x3e8>;
+						full-duplex;
+					};
+				};
+			};
+		};
+	};
+
+	switch0: switch0 {
+		compatible = "realtek,rtl8365mb";
+		dsa,member = <0x00 0x00>;
+		mdio-gpios = <&gpio 0x2c 0x06>;
+		mdc-gpios = <&gpio 0x2d 0x06>;
+
+		ports {
+			#address-cells = <0x01>;
+			#size-cells = <0x00>;
+			port@0 {
+				reg = <0x00>;
+				label = "cpu";
+				phy-mode = "internal";
+				phy-handle = <&swphy0>;
+				dsa-tag-protocol = "rtl8_4t";
+				ethernet = <&genet>;
+			};
+			port@1 {
+				reg = <0x01>;
+				label = "swp0";
+				phy-mode = "internal";
+				phy-handle = <&swphy1>;
+			};
+			port@2 {
+				reg = <0x02>;
+				label = "swp1";
+				phy-mode = "internal";
+				phy-handle = <&swphy2>;
+			};
+			port@3 {
+				reg = <0x03>;
+				label = "swp2";
+				phy-mode = "internal";
+				phy-handle = <&swphy3>;
+			};
+			port@4 {
+				reg = <0x04>;
+				label = "swp3";
+				phy-mode = "internal";
+				phy-handle = <&swphy4>;
+			};
+
+			switch0_ext1: port@6 {
+				reg = <0x06>;
+				label = "ext1";
+				phy-mode = "rgmii";
+				tx-internal-delay-ps = <0x7d0>;
+				rx-internal-delay-ps = <0x00>;
+				fixed-link {
+					speed = <0x3e8>;
+					full-duplex;
+				};
+			};
+
+			switch0_ext2: port@7 {
+				reg = <0x07>;
+				label = "ext2";
+				phy-mode = "rgmii";
+				tx-internal-delay-ps = <0x7d0>;
+				rx-internal-delay-ps = <0x00>;
+				fixed-link {
+					speed = <0x3e8>;
+					full-duplex;
+				};
+			};
+		};
+
+		mdio {
+			compatible = "realtek,smi-mdio";
+			#address-cells = <0x01>;
+			#size-cells = <0x00>;
+			swphy0: phy@0 {
+				reg = <0x00>;
+			};
+			swphy1: phy@1 {
+				reg = <0x01>;
+			};
+			swphy2: phy@2 {
+				reg = <0x02>;
+			};
+			swphy3: phy@3 {
+				reg = <0x03>;
+			};
+			swphy4: phy@4 {
+				reg = <0x04>;
+			};
+		};
+	};
+
+	/* Enable CM4's built-in xHCI*/
+	scb {
+		xhci: xhci@7e9c0000 {
+			compatible = "generic-xhci";
+			/* status = "okay"; */
+			reg = <0x00 0x7e9c0000 0x100000>;
+			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+			power-domains = <&power RPI_POWER_DOMAIN_USB>;
+		};
+	};
+
+};
+
+&usb {
+	status = "disabled";
+};
+
+&ddc0 {
+	status = "okay";
+};
+
+&ddc1 {
+	status = "okay";
+};
+
+&gpio {
+	/*
+	* Parts taken from rpi_SCH_4b_4p0_reduced.pdf and
+	* the official GPU firmware DT blob.
+	*
+	* Legend:
+	* "FOO" = GPIO line named "FOO" on the schematic
+	* "FOO_N" = GPIO line named "FOO" on schematic, active low
+	*/
+	gpio-line-names = "ID_SDA",
+		"ID_SCL",
+		"SDA1",
+		"SCL1",
+		"GPIO_GCLK",
+		"GPIO5",
+		"GPIO6",
+		"SPI_CE1_N",
+		"SPI_CE0_N",
+		"SPI_MISO",
+		"SPI_MOSI",
+		"SPI_SCLK",
+		"GPIO12",
+		"GPIO13",
+		/* Serial port */
+		"TXD1",
+		"RXD1",
+		"GPIO16",
+		"GPIO17",
+		"GPIO18",
+		"GPIO19",
+		"GPIO20",
+		"GPIO21",
+		"GPIO22",
+		"GPIO23",
+		"GPIO24",
+		"GPIO25",
+		"GPIO26",
+		"GPIO27",
+		"RGMII_MDIO",
+		"RGMIO_MDC",
+		/* Used by BT module */
+		"CTS0",
+		"RTS0",
+		"TXD0",
+		"RXD0",
+		/* Used by Wifi */
+		"SD1_CLK",
+		"SD1_CMD",
+		"SD1_DATA0",
+		"SD1_DATA1",
+		"SD1_DATA2",
+		"SD1_DATA3",
+		/* Shared with SPI flash */
+		"PWM0_MISO",
+		"PWM1_MOSI",
+		"STATUS_LED_G_CLK",
+		"SPIFLASH_CE_N",
+		"SDA0",
+		"SCL0",
+		"RGMII_RXCLK",
+		"RGMII_RXCTL",
+		"RGMII_RXD0",
+		"RGMII_RXD1",
+		"RGMII_RXD2",
+		"RGMII_RXD3",
+		"RGMII_TXCLK",
+		"RGMII_TXCTL",
+		"RGMII_TXD0",
+		"RGMII_TXD1",
+		"RGMII_TXD2",
+		"RGMII_TXD3";
+
+	spi0_pins: spi0_pins {
+		brcm,pins = <0x28 0x29 0x2a>;
+		brcm,function = <0x03>;
+	};
+	spi0_cs_pins: spi0_cs_pins {
+		brcm,pins = <0x2b>;
+		brcm,function = <0x01>;
+	};
+};
+
+&spi {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
+	cs-gpios = <&gpio 0x2b 0x01>;
+	spidev@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0x00>;
+		spi-max-frequency = <0x989680>;
+	};
+};
+
+&i2c0 {
+	rv3028@52 {
+		compatible = "microcrystal,rv3028";
+		reg = <0x52>;
+	};
+	pse@75 {
+		compatible = "icplus,ip808ar";
+		reg = <0x75>;
+		pse-id = <0x00>;
+		power-allowance = <0x78>;
+	};
+	pse@74 {
+		compatible = "icplus,ip808ar";
+		reg = <0x74>;
+		pse-id = <0x01>;
+		power-allowance = <0x78>;
+	};
+};
+
+&hdmi0 {
+	status = "okay";
+};
+
+&hdmi1 {
+	status = "okay";
+};
+
+&genet {
+	status = "okay";
+};
+
+&led_act {
+	gpios = <&gpio 42 GPIO_ACTIVE_HIGH>;
+};
+
+&leds {
+	led-pwr {
+		label = "PWR";
+		gpios = <&expgpio 2 GPIO_ACTIVE_LOW>;
+		default-state = "keep";
+		linux,default-trigger = "default-on";
+	};
+};
+
+&pixelvalve0 {
+	status = "okay";
+};
+
+&pixelvalve1 {
+	status = "okay";
+};
+
+&pixelvalve2 {
+	status = "okay";
+};
+
+&pixelvalve4 {
+	status = "okay";
+};
+
+&vc4 {
+	status = "okay";
+};
+
+&vec {
+	status = "disabled";
+};

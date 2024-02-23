@@ -1,0 +1,22 @@
+# RPI `config.txt` file to run Linux
+
+# VPU boot settings
+boot_delay=1
+disable_overscan=1
+disable_splash=1
+
+# Next stage config (run Linux)
+arm_64bit=1
+enable_uart=1
+uart_2ndstage=1
+
+# CM4 doesn't use a USB3 controller
+otg_mode=1
+#dtparam=i2c_vc=on
+
+kernel={{CONFIG_KERNEL}}
+initramfs {{CONFIG_INITRD}} followkernel
+
+# include extra config, if any
+include extraconfig.txt
+
