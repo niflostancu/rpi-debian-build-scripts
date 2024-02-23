@@ -16,6 +16,7 @@ cat << EOF > /etc/initramfs/rpi-vars.sh
 $([[ -z "$RPI_DISABLE_FIRMWARE_GEN" ]] || declare -p RPI_DISABLE_FIRMWARE_GEN)
 $([[ -z "$RPI_CMDLINE_EXTRA" ]] || declare -p RPI_CMDLINE_EXTRA)
 $([[ -z "$IMAGE_ROOTFS_PART_NAME" ]] || declare -p IMAGE_ROOTFS_PART_NAME)
+$([[ -z "$INITRAMFS_ROOT_DEVICE" ]] || declare -p INITRAMFS_ROOT_DEVICE)
 $([[ -z "$RPI_FIRMWARE_FILES" ]] || declare -p RPI_FIRMWARE_FILES)
 $([[ -z "$RPI_CONFIG_EXTRA" ]] || declare -p RPI_CONFIG_EXTRA)
 $([[ -z "$RPI_BOOT_EXTRA_FILES" ]] || declare -p RPI_BOOT_EXTRA_FILES)
