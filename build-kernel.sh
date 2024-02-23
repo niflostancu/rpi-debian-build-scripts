@@ -51,7 +51,15 @@ KERNEL_MAKE_GOALS=(Image modules dtbs)
 KERNEL_PACKAGE_GOALS=(bindeb-pkg)
 
 # kernel configuration phase
-make "${MAKE_ARGS[@]}" "$KERNEL_DEFCONFIG"
+if [[ "$KERNEL_DEFCONFIG" == */* ]]; then
+    # load defconfig from provided file
+    CONFIG_NAME=$(basename "$KERNEL_DEFCONFIG")
+    cp -f "$KERNEL_DEFCONFIG" "arch/$KERNEL_ARCH/configs/$CONFIG_NAME"
+    make "${MAKE_ARGS[@]}" "$CONFIG_NAME"
+else
+    make "${MAKE_ARGS[@]}" "$KERNEL_DEFCONFIG"
+fi
+
 if [[ -n "$KERNEL_LOCALVERSION" ]]; then
     ./scripts/config --set-str LOCALVERSION ""
     sed -i "s|CONFIG_LOCALVERSION_AUTO=.*|CONFIG_LOCALVERSION_AUTO=n|" .config
