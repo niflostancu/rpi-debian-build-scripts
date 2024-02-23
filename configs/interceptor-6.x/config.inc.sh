@@ -7,7 +7,7 @@ KERNEL_LOCALVERSION="-rpi-interceptor"
 
 if [[ "$KERNEL_USE_MAINLINE" == "1" ]]; then
 	KERNEL_BRANCH="linux-$KERNEL_VERSION.y"
-	KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"defconfig"}
+	KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"$CUSTOM_CONFIG_DIR/files/kernel-6.5/interceptor_nas_6x_defconfig"}
 	KERNEL_PATCHES_DIR="$CUSTOM_CONFIG_DIR/files/kernel-6.5"
 else
 	KERNEL_VERSION=${KERNEL_VERSION:-6.5}
