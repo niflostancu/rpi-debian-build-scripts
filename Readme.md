@@ -1,12 +1,13 @@
-# RaspberryPi Debian (arm64) rootfs build scripts for NAS
+# RaspberryPi Debian-based rootfs build scripts
 
 This project contains several scripts for building a minimalistic rootfs,
-kernel and boot files for use with a RPI4-based NAS (Network Attached Storage).
+kernel and boot files, primarily for personal use with a RPI4-based NAS (Network
+Attached Storage), but fairly customizable (using configuration modules).
 
 Features:
 
 - a `qemu-user` + `binfmt` + `debootstrap` approach for cross-bootstrapping rootfs;
-- script for easily chrooting inside the rootfs container (using `systemd-nspawn`);
+- scripts for easily chrooting inside the rootfs container (using `systemd-nspawn`);
 - custom kernel building script (using cross-compiler);
 - modular approach for running a series of provisioning scripts inside the
   rootfs to fully configure the Debian installation;
@@ -40,30 +41,33 @@ included for Vagrant ;) )!
 The kernel and the rootfs are built separately, though the final stages
 of the provisioning scripts require a kernel `.deb` package to be present.
 
-First, read (but don't modify!) through `config.default.sh` for a list of the available variables. 
-If you want to customize them, simply create `config.sh` and set your desired options.
+First, read (but don't modify!) through `config.default.sh` for a list of the
+available variables. If you want to customize them, simply create `config.sh`
+and set your desired options (it is gitignored).
 
-Additionally, you can use a predefined configuration overlay: check out the
-[`configs/`](./configs/) directory; choose one, then set / export the
+Additionally, you can use a predefined configuration overlay or build your own!
+Check out the [`configs/`](./configs/) directory, then set / export the
 `CUSTOM_CONFIG` environment variable with the name of the configuration
 / board's directory, e.g.:
 
 ```sh
-export CUSTOM_CONFIG="interceptor-5.15"
+export CUSTOM_CONFIG="interceptor-6.x"
 ```
 
 ### Kernel
 
-To compile the kernel, use a Debian-based system with kernel dependencies
-installed.
+To manually compile the kernel, use a Debian-based system with kernel
+dependencies installed.
 For this specific purpose, a Vagrantfile is also supplied (configured to spawn
 a Debian-based VM).
-Then, simply: `./build-kernel.sh`!
 
-After building the kernel, please do a manual copy of the obtained `*.deb`
-packages to the `dist/kernel-<version>` subdirectory in here (create it if it
-doesn't exist, as it is gitignored). The `build-rootfs.sh` script will look
-there during the install phase (see [50-boot-files.sh](rootfs-install/scripts/50-boot-files.sh)).
+Then, simply run the script: `./build-kernel.sh`!
+
+After building the kernel, the `*.deb`s are automatically copied to the
+`dist/kernel-<config-ver>` subdirectory.
+
+The `build-rootfs.sh` script will look there during the install phase (see
+[57-kernel.sh](rootfs-install/scripts/57-kernel.sh)).
 
 ### RootFS
 
@@ -74,21 +78,28 @@ The installation scripts can be re-run at any time by invoking the same script
 
 ### Image
 
-The `build-image.sh` script should obtain a raw bootable image (with two
-partitions: a FAT32 with RPI boot files, and the ext4 rootfs).
+Finally, use the `build-image.sh` script should obtain a raw bootable image
+(with two partitions: a FAT32 with RPI boot files, and the ext4 rootfs).
 
 You might wish to customize your boot media, see the next section for details.
 
 ### U-Boot (optional)
 
-If you wish to build a custom u-boot BL31 loader for your RaspberryPi, start by
-checking out the `build-uboot.sh` script!
+If you wish to build a custom u-boot
+[BL31](https://trustedfirmware-a.readthedocs.io/en/latest/design/firmware-design.html#cold-boot)
+loader for your RaspberryPi, start by checking out the `build-uboot.sh` script!
+
+Note: you must manually modify `config.txt` to enable it, for now (example
+configs are WIP)!
 
 ## Advanced usage
 
 For advanced use cases, read below:
 
-### Manually deploying to RaspberryPi boot media
+### Manually deploying to internal RaspberryPi 4 boot media
+
+For example, if you want to install on Compute Module's internal eMMC or an
+attached SSD drive and you don't want to move it to an external PC:
 
 0. Make sure you understand the [RPI4 boot
   process](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-4-boot-flow).
@@ -104,7 +115,10 @@ For advanced use cases, read below:
   want to run it from (e.g., internal eMMC / SD card or even PCIe / SATA SSDs).
 
 2. Boot the Raspberry PI (or similar embedded device) into a live distro (e.g.,
-  from USB). Arch Linux works best for this purpose ;)
+  from USB). Arch Linux works best for this purpose ;) Alternatively,
+  a separate Debian-based image built using `build-image.sh` will also work,
+  though you will need to manually install some packages (e.g., partition
+  manager, FS utils, `arch-install-scripts`).
 
 3. Partition your disk(s) to have at least a RaspberryPI FAT32 boot partition
   (usually, 256MB is enough) and an empty `ext4` partition to install the rootfs
@@ -112,7 +126,7 @@ For advanced use cases, read below:
 
   Note: the stock RPI bootloader cannot boot from an external SSD drive,
   but you can put the boot partition inside the eMMC memory and the root partition
-  on the SSD (and have this path configured at the kernel command line).
+  on the SSD (and have this `root=` path configured on the kernel's cmdline).
 
 4. Mount the root device and extract the rootfs archive on your desired partition:
   ```sh
@@ -129,11 +143,13 @@ For advanced use cases, read below:
   ```sh
   mkdir -p /boot/firmware
   mount /dev/mmcblk0p1 /boot/firmware
+  # note: the Interceptor board uses mmcblk1*! better check using `lsblk`.
   ```
 
-  The included initramfs script has already generated a `boot.img` disk image
-  with the kernel, initramfs and other config/firmware files required by the RPI
-  bootloader.
+  The included `initramfs` script generates a `boot.img` disk image with the
+  kernel, initramfs and other config/firmware files required by the RPI
+  bootloader (you can disable this using the `RPI_SKIP_BOOT_RAMDISK` config
+  variable).
 
   You can simply copy it to RPI's boot partition and use a simple config.txt
   telling it to [load the ramdisk](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#boot_ramdisk):
@@ -143,7 +159,7 @@ For advanced use cases, read below:
   echo "boot_ramdisk=1" > /boot/firmware/config.txt
   ```
 
-  Using this, you can also support boot failover configurations (TODO)!
+  Using this, you can also support boot failover configurations (WIP/TODO)!
 
 ### Configuring LUKS initramfs for password input
 
@@ -174,6 +190,9 @@ Additional steps must be taken for a LUKS-based setup (on the live RPI distro):
   # <target> <source device>                 <key file>  <options>
   cryptroot  /dev/disk/by-partlabel/RPIOSRoot  none        luks,discard
   ```
+
+- If using the included `initramfs` hooks, change the `/etc/initramfs/rpi-*`
+  files on the rootfs and enter the required RPI config + kernel cmdline parameters.
 
 - Finally, run `update-initramfs -u` to re-generate the initial ramdisk and copy
   the `boot.img` to the boot partition (as in Step. 5).
