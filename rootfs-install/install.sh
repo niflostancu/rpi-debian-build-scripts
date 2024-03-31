@@ -1,5 +1,5 @@
 #!/bin/bash
-# Chrootfs inside the rootfs.
+# Rootfs install / distro upgrade script.
 
 set -eo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../" && pwd)"
@@ -10,6 +10,12 @@ source "$SRC_DIR/lib/common.sh"
 
 # dependencies
 source "$SRC_DIR/lib/packages.sh"
+
+if [[ "$1" == "--upgrade" ]]; then
+    export DISTRO_UPGRADE=1
+elif [[ -n "$1" ]]; then
+    log_fatal "Invalid argument: $1"
+fi
 
 # rootfs install hook
 if declare -f -F "rootfs_install_hook" >/dev/null; then

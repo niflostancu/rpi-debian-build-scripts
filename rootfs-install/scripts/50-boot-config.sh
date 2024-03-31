@@ -1,6 +1,8 @@
 #!/bin/bash
 # Installs bootloader assets & configs
 
+if [[ -n "$DISTRO_UPGRADE" ]]; then return 0; fi
+
 mkdir -p /etc/initramfs
 
 # install default boot files

@@ -1,6 +1,9 @@
 #!/bin/bash
 # User / auth / networking configurations (for headless usage)
 
+# don't run on upgrades
+if [[ -n "$DISTRO_UPGRADE" ]]; then return 0; fi
+
 # set hostname (Note: gets replaced when chrooting...)
 HOSTNAME=${HOSTNAME:-nas}
 echo "$HOSTNAME" > /etc/hostname
