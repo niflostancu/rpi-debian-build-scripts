@@ -2,7 +2,7 @@
 #
 
 KERNEL_USE_MAINLINE=${KERNEL_USE_MAINLINE:-1}
-KERNEL_VERSION=${KERNEL_VERSION:-6.5}
+KERNEL_VERSION=${KERNEL_VERSION:-6.6}
 KERNEL_LOCALVERSION="-rpi-interceptor"
 
 if [[ "$KERNEL_USE_MAINLINE" == "1" ]]; then
@@ -17,7 +17,7 @@ else
 fi
 
 # RPI firmware / boot files
-INTERCEPTOR_DTB_FROM="$INSTALL_SRC/files/kernel-$KERNEL_VERSION/interceptor.dtb"
+INTERCEPTOR_DTB_FROM="$INSTALL_SRC/files/kernel-6.5/interceptor.dtb"
 INTERCEPTOR_DTB_NAME=interceptor-rpi-cm4-${KERNEL_VERSION}.dtb
 RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-4-b.dtb
 	overlays/overlay_map.dtb overlays/hat_map.dtb overlays/upstream-pi4.dtbo
