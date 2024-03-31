@@ -14,10 +14,10 @@ case "$1" in
 esac
 . /usr/share/initramfs-tools/hook-functions
 
-# add network / switch-related modules
-manual_add_modules rtl8366_smi
-manual_add_modules rtl8367b
-manual_add_modules 8021q
-manual_add_modules stp
-manual_add_modules llc
+# add PHY network drivers / switch-related modules
+manual_add_modules veth 8021q stp llc dsa_core bridge br_netfilter genet tag_rtl8_4
+manual_add_modules realtek_smi realtek_mdio rtl8366 rtl8365mb broadcom bcm_phy_lib mdio_bcm_unimac pcie_brcmstb
+
+mkdir -p "$DESTDIR/etc/systemd/network/"
+cp "/etc/systemd/network/"* "$DESTDIR/etc/systemd/network/"
 

@@ -4,7 +4,7 @@
 set -eo pipefail
 INTERCEPTOR_FILES="$INSTALL_SRC/files"
 
-install -oroot -m644 "$INTERCEPTOR_FILES/eth0.network" "/etc/systemd/network/eth0.network"
+install -oroot -m644 "$INTERCEPTOR_FILES/network/eth0.network" "/etc/systemd/network/eth0.network"
 
 cp -f "$INTERCEPTOR_DTB_FROM" "/boot/$INTERCEPTOR_DTB_NAME"
 
