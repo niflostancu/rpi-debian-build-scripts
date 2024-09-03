@@ -15,7 +15,6 @@ install -oroot -m755 "$RPI_CMDLINE_FILE" "/etc/initramfs/rpi-cmdline.txt"
 
 # save configuration vars
 cat << EOF > /etc/initramfs/rpi-vars.sh
-$([[ -z "$RPI_DISABLE_FIRMWARE_GEN" ]] || declare -p RPI_DISABLE_FIRMWARE_GEN)
 $([[ -z "$RPI_CMDLINE_EXTRA" ]] || declare -p RPI_CMDLINE_EXTRA)
 $([[ -z "$IMAGE_ROOTFS_PART_NAME" ]] || declare -p IMAGE_ROOTFS_PART_NAME)
 $([[ -z "$INITRAMFS_ROOT_DEVICE" ]] || declare -p INITRAMFS_ROOT_DEVICE)
