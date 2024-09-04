@@ -83,6 +83,9 @@ RPI_FIRMWARE_DIR=${RPI_FIRMWARE_DIR:-"/boot/firmware"}
 DROPBEAR_AUTHORIZED_KEYS=${DROPBEAR_AUTHORIZED_KEYS:-"$SRC_DIR/dist/authorized_keys"}
 DROPBEAR_PORT=${DROPBEAR_PORT:-2002}
 
+# custom hostname of the resulting rootfs (including inside chroot)
+ROOTFS_HOSTNAME=${ROOTFS_HOSTNAME:-"debian"}
+
 # main user to create (it will have an empty password initially!)
 MAIN_USER=${MAIN_USER:-pi}
 

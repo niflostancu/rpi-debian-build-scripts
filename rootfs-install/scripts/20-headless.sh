@@ -4,9 +4,7 @@
 # don't run on upgrades
 if [[ -n "$DISTRO_UPGRADE" ]]; then return 0; fi
 
-# set hostname (Note: gets replaced when chrooting...)
-HOSTNAME=${HOSTNAME:-nas}
-echo "$HOSTNAME" > /etc/hostname
+echo "$ROOTFS_HOSTNAME" > /etc/hostname
 
 # create user, if it doesn't exist
 getent passwd "$MAIN_USER" &> /dev/null || {
