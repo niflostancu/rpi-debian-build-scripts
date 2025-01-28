@@ -13,7 +13,7 @@ function apt_install() {
         shift
     done
     if [[ ${#pkgs[@]} == 0 ]]; then return 0; fi
-    log_debug "apt_install ${pkgs[@]}"
+    sh_log_debug "apt_install ${pkgs[@]}"
     apt-get -y "${DEB_APT_OPTS[@]}" install "${pkgs[@]}"
 }
 

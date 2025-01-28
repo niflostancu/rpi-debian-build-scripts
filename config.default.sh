@@ -59,10 +59,10 @@ KERNEL_DISTRIB_DIR=${KERNEL_DISTRIB_DIR:-"$SRC_DIR/dist/kernel$DISTRO_SUFFIX"}
     RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-cm4.dtb)
 # Initial RPI config.txt and cmdline.txt to copy
 # Afterwards, you can find / edit them inside /etc/initramfs/ on the rootfs ;)
-RPI_CONFIG_FILE=${RPI_CONFIG_FILE:-"$INSTALL_SRC/files/boot/config.txt"}
-RPI_CMDLINE_FILE=${RPI_CMDLINE_FILE:-"$INSTALL_SRC/files/boot/cmdline.txt"}
+RPI_CONFIG_FILE=${RPI_CONFIG_FILE:-"$SRC_DIR/rootfs-install/files/boot/config.txt"}
+RPI_CMDLINE_FILE=${RPI_CMDLINE_FILE:-"$SRC_DIR/rootfs-install/files/boot/cmdline.txt"}
 # e.g., if using LUKS:
-#RPI_CMDLINE_FILE="$INSTALL_SRC/files/boot/cmdline-cryptroot.txt"
+#RPI_CMDLINE_FILE="$SRC_DIR/rootfs-install/files/boot/cmdline-cryptroot.txt"
 # use to append extra lines to config.txt:
 #RPI_CONFIG_EXTRA="dtoverlay=vc4-kms-v3d"$'\n'
 # Path to the mounted RPI firmware

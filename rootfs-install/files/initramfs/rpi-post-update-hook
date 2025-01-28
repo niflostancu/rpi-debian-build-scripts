@@ -1,7 +1,7 @@
 #!/bin/bash
 # Initramfs Post-Update hook to generate boot.img inside /boot
 set -eo pipefail
-source /usr/local/lib/rpi-debian-scripts.sh
+source /usr/local/lib/rpi-debian/base.sh
 
 version="$1"
 if [[ -z "$version" ]]; then
@@ -60,21 +60,21 @@ function build_firmware_partition() {
 	fi
 	if [[ ! "$RPI_SKIP_BOOT_CONFIG" =~ ^1|y(es)?$ ]]; then
 		# save config txts to /boot/firmware
-		interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$DEST/config.txt"
-		interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$DEST/cmdline.txt"
+		sh_interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$DEST/config.txt"
+		sh_interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$DEST/cmdline.txt"
 	fi
 }
 
 if [[ "$RPI_SKIP_BOOT_RAMDISK" =~ ^1|y(es)?$ ]]; then
-	log_info "Building firmware files in '$RPI_FIRMWARE_DIR' (ver. $version)"
+	sh_log_info "Building firmware files in '$RPI_FIRMWARE_DIR' (ver. $version)"
 	mkdir -p "$RPI_FIRMWARE_DIR"
 	build_firmware_partition "$RPI_FIRMWARE_DIR"
-	log_debug $'Firmware dir contents: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
+	sh_log_debug $'Firmware dir contents: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
 	# aaand we're done!
 	exit 0
 fi
 
-log_info "Running RPI ramdisk generator for version $version..."
+sh_log_info "Running RPI ramdisk generator for version $version..."
 
 dd if=/dev/zero bs=1M count=$BOOTRD_SIZE of="$BOOTRD_IMG"
 losetup /dev/loop8 "$BOOTRD_IMG"
@@ -93,11 +93,11 @@ mount /dev/loop8 "$BOOTRD_MOUNTPOINT"
 
 build_firmware_partition "$BOOTRD_MOUNTPOINT"
 if [[ ! "$RPI_SKIP_BOOT_CONFIG" =~ ^1|y(es)?$ ]]; then
-	interpolate_vars "$RPI_CONFIG_RAW" "${INTERPOLATE_VARS[@]}" > "/boot/config-raw.txt"
+	sh_interpolate_vars "$RPI_CONFIG_RAW" "${INTERPOLATE_VARS[@]}" > "/boot/config-raw.txt"
 fi
 
-log_info "RPI boot ramdisk '$BOOTRD_IMG' successfull generated!"
-log_debug $'Boot ramdisk contents: \n' "$(ls -lh "$MOUNT_TMP$BOOTRD_MOUNTPOINT")"
+sh_log_info "RPI boot ramdisk '$BOOTRD_IMG' successfull generated!"
+sh_log_debug $'Boot ramdisk contents: \n' "$(ls -lh "$MOUNT_TMP$BOOTRD_MOUNTPOINT")"
 
 exit 0
 

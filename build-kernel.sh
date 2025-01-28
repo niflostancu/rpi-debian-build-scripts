@@ -2,14 +2,15 @@
 # Cross-compiles a raspberry pi kernel (with optional patches).
 
 set -eo pipefail
-SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
-source "$SRC_DIR/lib/common.sh"
+source "$(dirname -- "${BASH_SOURCE[0]}")/lib/base.sh"
+
+@import 'load_config'
 
 # env / cmdline args
 SKIP_BUILD="${SKIP_BUILD:-1}"
 
 # config variables
-[[ -n "$KERNEL_DEST" ]] || log_fatal "No KERNEL_DEST given!"
+[[ -n "$KERNEL_DEST" ]] || sh_log_panic "No KERNEL_DEST given!"
 KERNEL_BRANCH=${KERNEL_BRANCH:-"unknown_branch"}
 KERNEL_ARCH=${KERNEL_ARCH:-"arm64"}
 KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"unknown_defconfig"}
@@ -32,11 +33,11 @@ cd "$KERNEL_DEST"
 pwd
 
 if [[ -n "$KERNEL_PATCHES_DIR" ]] && [[ -d "$KERNEL_PATCHES_DIR" ]]; then
-    log_info "Using patch dir: $KERNEL_PATCHES_DIR"
+    sh_log_info "Using patch dir: $KERNEL_PATCHES_DIR"
     for pfile in "$KERNEL_PATCHES_DIR/"*.patch; do
         # idempotency: check if patch has already been applied
         if ! patch -R -p1 -s -f --dry-run <"$pfile"; then
-            log_debug "Applying patch $pfile"
+            sh_log_debug "Applying patch $pfile"
             patch -p1 < "$pfile"
         fi
     done
@@ -64,12 +65,12 @@ if [[ -n "$KERNEL_LOCALVERSION" ]]; then
     ./scripts/config --set-str LOCALVERSION ""
     sed -i "s|CONFIG_LOCALVERSION_AUTO=.*|CONFIG_LOCALVERSION_AUTO=n|" .config
     export LOCALVERSION="$KERNEL_LOCALVERSION"
-    log_info "Using LOCALVERSION='$KERNEL_LOCALVERSION'"
+    sh_log_info "Using LOCALVERSION='$KERNEL_LOCALVERSION'"
 fi
 
 # kernel build hook
 if declare -f -F "kernel_build_hook" >/dev/null; then
-    log_info "Running kernel_build_hook..."
+    sh_log_info "Running kernel_build_hook..."
     kernel_build_hook "$KERNEL_DEST"
 fi
 
@@ -90,24 +91,24 @@ function def_kernel_dist_hook() {
         [[ "${#_FIND_ARGS[@]}" == '0' ]] || _FIND_ARGS+=('-or')
         _FIND_ARGS+=(-name "$pat")
     done
-    log_debug "find args: ${_FIND_ARGS[@]}"
+    sh_log_debug "find args: ${_FIND_ARGS[@]}"
     # note: kernel package target outputs its files to build parent dir
     mapfile -d '' _DIST_FILES < <(find ../ '(' "${_FIND_ARGS[@]}" ')' -print0)
-    log_debug "Dist files: ${_DIST_FILES[@]}"
+    sh_log_debug "Dist files: ${_DIST_FILES[@]}"
     mkdir -p "$KERNEL_DISTRIB_DIR/"
     for file in "${_DIST_FILES[@]}"; do
-        log_debug "dist: $file"
+        sh_log_debug "dist: $file"
         cp -f "$file" "$KERNEL_DISTRIB_DIR/"
     done
 }
 
 # kernel distribute hook
 if declare -f -F "kernel_dist_hook" >/dev/null; then
-    log_info "Running kernel_dist_hook..."
+    sh_log_info "Running kernel_dist_hook..."
     kernel_dist_hook "$KERNEL_DEST"
 else
     def_kernel_dist_hook
 fi
 
-log_info "Kernel build finished!"
+sh_log_info "Kernel build finished!"
 

@@ -2,8 +2,9 @@
 # Chrootfs inside the rootfs.
 
 set -eo pipefail
-SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
-source "$SRC_DIR/lib/common.sh"
+source "$(dirname -- "${BASH_SOURCE[0]}")/lib/base.sh"
+
+@import 'load_config'
 
 CHROOT_USER=${CHROOT_USER:-root}
 CHROOT_HOME=${CHROOT_HOME:-/root}
@@ -37,7 +38,7 @@ while [[ $# > 0 ]]; do
     shift
 done
 
-[[ -n "$ROOTFS_DEST" ]] || log_fatal "No ROOTFS_DEST given!"
+[[ -n "$ROOTFS_DEST" ]] || sh_log_panic "No ROOTFS_DEST given!"
 
 # default chroot command
 if [[ "$#" == 0 ]]; then
@@ -46,8 +47,8 @@ fi
 
 export SYSTEMD_SECCOMP=0
 
-log_info "Chrooting into '$ROOTFS_DEST'"
-log_debug systemd-nspawn "${NSPAWN_ARGS[@]}" -D "$ROOTFS_DEST" \
+sh_log_info "Chrooting into '$ROOTFS_DEST'"
+sh_log_debug systemd-nspawn "${NSPAWN_ARGS[@]}" -D "$ROOTFS_DEST" \
     env -i "${CHROOT_ENV[@]}" "$@"
 
 # this is required for providing the rootfs with an usable loop device,

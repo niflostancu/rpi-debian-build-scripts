@@ -30,7 +30,7 @@ EXTRA_DEBS=("$SWCONFIG_DEB")
 function kernel_dist_hook() {
 	def_kernel_dist_hook
 	for file in arch/arm64/boot/dts/broadcom/{bcm2711-rpi-4-b.dtb,bcm2711-rpi-cm4.dtb,interceptor.dtb}; do
-		log_debug "dist $file"
+		sh_log_debug "dist $file"
 		cp -f "$file" "$KERNEL_DISTRIB_DIR/"
 	done
 }

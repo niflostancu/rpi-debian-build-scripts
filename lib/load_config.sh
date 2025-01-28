@@ -1,7 +1,13 @@
 #!/bin/bash
-# Common utility functions.
+# Common host scripts configuration module
 
-source "$SRC_DIR/lib/utils.sh"
+# export parent source directory to called scripts
+SRC_DIR="$(dirname -- "$(sh_get_script_path)")"
+export SRC_DIR
+
+CONFIGS="$SRC_DIR/configs"
+CONFIG_SNIPPETS="$CONFIGS/_snippets"
+SKIP_DEFAULT_CONFIG=${SKIP_DEFAULT_CONFIG:-}
 
 # load user config first
 [[ ! -f "$SRC_DIR/config.sh" ]] || source "$SRC_DIR/config.sh"

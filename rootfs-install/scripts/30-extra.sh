@@ -2,7 +2,7 @@
 # Extra config (custom scripts)
 
 if declare -f -F "rootfs_extra_script" >/dev/null; then
-    log_info "Running rootfs_extra_script..."
+    sh_log_info "Running rootfs_extra_script..."
     rootfs_extra_script
 fi
 
