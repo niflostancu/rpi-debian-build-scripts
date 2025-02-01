@@ -14,10 +14,18 @@ CROSS_COMPILER=${CROSS_COMPILER:-"aarch64-linux-gnu-"}
 # sudo-like utility to use (when root privileges are required)
 SUDO=${SUDO:-sudo}
 
+# Docker image name (will be built as)
+BUILD_DOCKER_IMAGE=${BUILD_DOCKER_IMAGE:-"localhost/rpi-debian-builder"}
+
 # distro build / config suffix
 [[ -n "$DISTRO_SUFFIX" ]] || DISTRO_SUFFIX="${CUSTOM_CONFIG:+-${CUSTOM_CONFIG}}"
 # destination dirs (note: you need ~5GB of free disk space in here)
 BUILD_DEST=${BUILD_DEST:-"/tmp/rpi-debian$DISTRO_SUFFIX"}
+
+# hardcoded build root inside the docker container
+BUILD_DOCKER_DEST=${BUILD_DOCKER_DEST:-"/home/builder/rpi-debian$DISTRO_SUFFIX"}
+[[ -z "$RPI_BUILD_INSIDE_DOCKER" ]] || BUILD_DEST="$BUILD_DOCKER_DEST"
+
 # Note: you can leave those as they are automatically derived from BUILD_DEST
 ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 KERNEL_DEST=${KERNEL_DEST-"$BUILD_DEST/kernel-build"}
