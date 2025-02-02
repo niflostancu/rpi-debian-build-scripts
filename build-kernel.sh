@@ -93,7 +93,8 @@ function def_kernel_dist_hook() {
     done
     sh_log_debug "find args: ${_FIND_ARGS[@]}"
     # note: kernel package target outputs its files to build parent dir
-    mapfile -d '' _DIST_FILES < <(find ../ '(' "${_FIND_ARGS[@]}" ')' -print0)
+    mapfile -d '' _DIST_FILES < <(find ../ -maxdepth 1 -mindepth 1 \
+        '(' "${_FIND_ARGS[@]}" ')' -print0)
     sh_log_debug "Dist files: ${_DIST_FILES[@]}"
     mkdir -p "$KERNEL_DISTRIB_DIR/"
     for file in "${_DIST_FILES[@]}"; do

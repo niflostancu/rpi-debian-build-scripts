@@ -1,6 +1,6 @@
 # Debian rootfs + raspberrypi official fork kernel (RPI4 config)
 
-KERNEL_VERSION=${KERNEL_VERSION:-6.6}
+KERNEL_VERSION=${KERNEL_VERSION:-6.12}
 KERNEL_BRANCH="rpi-$KERNEL_VERSION.y"
 KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"bcm2712_defconfig"}
 
