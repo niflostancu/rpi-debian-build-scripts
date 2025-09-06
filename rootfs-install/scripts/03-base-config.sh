@@ -1,16 +1,18 @@
 #!/bin/bash
 # Base distribution configuration script
 
+. /etc/os-release
+
 # Apt sources
 cat <<EOF > /etc/apt/sources.list
-deb $APT_REPO_BASE_URL $DEB_VERSION main contrib non-free non-free-firmware
-deb-src $APT_REPO_BASE_URL $DEB_VERSION main contrib non-free non-free-firmware
+deb $APT_REPO_BASE_URL $VERSION_CODENAME main contrib non-free non-free-firmware
+deb-src $APT_REPO_BASE_URL $VERSION_CODENAME main contrib non-free non-free-firmware
 
-deb $APT_REPO_SECURITY_URL $DEB_VERSION-security main contrib non-free non-free-firmware
-deb-src $APT_REPO_SECURITY_URL $DEB_VERSION-security main contrib non-free non-free-firmware
+deb $APT_REPO_SECURITY_URL $VERSION_CODENAME-security main contrib non-free non-free-firmware
+deb-src $APT_REPO_SECURITY_URL $VERSION_CODENAME-security main contrib non-free non-free-firmware
 
-deb $APT_REPO_BASE_URL $DEB_VERSION-updates main contrib non-free non-free-firmware
-deb-src $APT_REPO_BASE_URL $DEB_VERSION-updates main contrib non-free non-free-firmware
+deb $APT_REPO_BASE_URL $VERSION_CODENAME-updates main contrib non-free non-free-firmware
+deb-src $APT_REPO_BASE_URL $VERSION_CODENAME-updates main contrib non-free non-free-firmware
 EOF
 
 # Disable the auto installation of recommended packages
