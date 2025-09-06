@@ -5,6 +5,8 @@
 SRC_DIR="$(dirname -- "$(sh_get_script_path)")"
 export SRC_DIR
 
+@import 'utils'
+
 CONFIGS="$SRC_DIR/configs"
 CONFIG_SNIPPETS="$CONFIGS/_snippets"
 SKIP_DEFAULT_CONFIG=${SKIP_DEFAULT_CONFIG:-}
