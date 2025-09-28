@@ -26,15 +26,51 @@ function debootstrap_stage1() {
     $SUDO debootstrap "${DEBOOTSTRAP_ARGS[@]}"
 }
 
-function rootfs_copy_qemu_static() {
-    local MOUNTPOINT="$1"
-    local QEMU_STATIC_PATH=  # do not assign here because the error won't be returned
-    if QEMU_STATIC_PATH=$(which qemu-$QEMU_ARCH-static); then
-        [[ -n "$QEMU_STATIC_PATH" ]] || sh_log_panic "Could not find qemu-$QEMU_ARCH-static!"
-        $SUDO install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT/usr/bin/" "$QEMU_STATIC_PATH"
+# Finds the qemu-user-static binary for the appropriate platform ($1)
+function rootfs_find_qemu_static_binfmt()
+{
+    local QEMU_ARCH="$PLATFORM_ARCH"
+    if [[ -n "$PLATFORM_QEMU_ARCH" ]]; then QEMU_ARCH="$PLATFORM_QEMU_ARCH"; fi
+    local INTERPRETER=
+    if INTERPRETER=$(cat /proc/sys/fs/binfmt_misc/qemu-"$QEMU_ARCH" | grep '^interpreter\b'); then
+        [[ -n "$INTERPRETER" ]] || return 1
+        echo -n "${INTERPRETER#* }"
         return 0
     fi
-    sh_log_panic "Could not find qemu-$QEMU_ARCH-static!"
+    return 1
+}
+function rootfs_find_qemu_static_exe()
+{
+    local QEMU_STATIC_PATH=  # do not assign here because the error won't be returned
+    local QEMU_ARCH="$PLATFORM_ARCH"
+    if [[ -n "$PLATFORM_QEMU_ARCH" ]]; then QEMU_ARCH="$PLATFORM_QEMU_ARCH"; fi
+    if QEMU_STATIC_PATH=$(which qemu-$QEMU_ARCH-static); then
+        [[ -n "$QEMU_STATIC_PATH" ]] || return 1
+        echo -n "$QEMU_STATIC_PATH"
+        return 0
+    fi
+    return 1
+}
+
+## Utility function to copy qemu static binaries to the given rootfs
+function rootfs_copy_qemu_static() {
+    local MOUNTPOINT="${1%/}"
+    local QEMU_STATIC_EXE=$(rootfs_find_qemu_static_exe || true)
+    local QEMU_STATIC_BINFMT=$(rootfs_find_qemu_static_binfmt || true)
+    local DIRNAME=
+    if [[ -z "$QEMU_STATIC_EXE" && -z "$QEMU_STATIC_BINFMT" ]]; then
+        sh_log_panic "Could not find qemu-$QEMU_ARCH-static!"
+    fi
+    if [[ -n "$QEMU_STATIC_EXE" ]]; then
+        sh_log_debug "Found qemu static (exe): $QEMU_STATIC_EXE"
+        DIRNAME=$(dirname "$QEMU_STATIC_EXE")
+        install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT/$DIRNAME/" "$QEMU_STATIC_EXE"
+    fi
+    if [[ -n "$QEMU_STATIC_BINFMT" && "$QEMU_STATIC_BINFMT" != "$QEMU_STATIC_EXE" ]]; then
+        sh_log_debug "Found qemu static (binfmt_misc): $QEMU_STATIC_BINFMT"
+        DIRNAME=$(dirname "$QEMU_STATIC_BINFMT")
+        install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT/$DIRNAME/" "$QEMU_STATIC_BINFMT"
+    fi
 }
 
 # Runs debootstrap stage 2 (chrooted base package installation)
@@ -75,5 +111,6 @@ if [[ -z "$HAS_STAGE2" ]]; then
 fi
 
 # last stage: run the provisioning tasks inside the container
+rootfs_copy_qemu_static "$ROOTFS_DEST"
 provision_rootfs "$ROOTFS_DEST"
 
