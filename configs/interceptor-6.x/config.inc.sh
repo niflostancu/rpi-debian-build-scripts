@@ -12,8 +12,8 @@ if [[ "$KERNEL_USE_MAINLINE" == "1" ]]; then
 	# note: mainline is not supported anymore, kept for reference
 	KERNEL_BRANCH="linux-$KERNEL_VERSION.y"
 	KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"$CUSTOM_CONFIG_DIR/kernel/mainline-6.5-old/interceptor_nas_6x_defconfig"}
-	KERNEL_PATCHES_DIR="$CUSTOM_CONFIG_DIR/kernel/mainline-6.5"
-	KERNEL_DTS_SRC="$CUSTOM_CONFIG_DIR/kernel/mainline-6.5"
+	KERNEL_PATCHES_DIR="$CUSTOM_CONFIG_DIR/kernel/mainline-6.5-old"
+	KERNEL_DTS_SRC="$CUSTOM_CONFIG_DIR/kernel/mainline-6.5-old"
 	KERNEL_LOCALVERSION="-interceptor-mainline"
 fi
 
