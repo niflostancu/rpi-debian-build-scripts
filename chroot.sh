@@ -14,7 +14,7 @@ NSPAWN_ARGS=(
     --capability=CAP_MKNOD --capability=all
     --bind=/dev/loop-control --bind=$CHROOT_LOOP_DEV
 )
-NSPAWN_ARGS+=(--hostname="$ROOTFS_HOSTNAME")
+NSPAWN_ARGS+=(--hostname="$ROOTFS_HOSTNAME" --register=no)
 CHROOT_PATH=/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin
 CHROOT_ENV=(
     TERM="$TERM" PS1='\u:\w\$ ' DEBUG=$DEBUG
