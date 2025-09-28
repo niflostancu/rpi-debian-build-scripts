@@ -9,7 +9,7 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/base.sh"
 
 [[ -n "$ROOTFS_DEST" ]] || sh_log_panic "No ROOTFS_DEST given!"
 DEB_ARCH=${DEB_ARCH:-"arm64"}
-DEB_VERSION=${DEB_VERSION:-"bookworm"}
+DEB_VERSION=${DEB_VERSION:-"trixie"}
 DEB_INSTALL_BASE_PKGS=${DEB_INSTALL_BASE_PKGS:-"ca-certificates,"}
 DEB_PROXY=${DEB_PROXY:-"http://ftp.de.debian.org/debian"}
 QEMU_ARCH=${QEMU_ARCH:-"aarch64"}
