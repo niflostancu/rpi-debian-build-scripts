@@ -67,6 +67,7 @@ sh_log_info "Copying files from '$ROOTFS_DEST/' to '$MOUNT_TMP/'"
 $SUDO rsync -a "$ROOTFS_DEST/" "$MOUNT_TMP/"
 
 if [[ ! "$RPI_SKIP_BOOT_RAMDISK" =~ ^1|y(es)?$ ]]; then
+    [[ -z "$BOOT_IMG_DEST" ]] || cp -f "$ROOTFS_DEST/boot/boot.img" "$BOOT_IMG_DEST"
     $SUDO cp -f "$ROOTFS_DEST/boot/boot.img" "$MOUNT_TMP$RPI_FIRMWARE_DIR/boot.img"
     $SUDO cp -f "$ROOTFS_DEST/boot/config-raw.txt" "$MOUNT_TMP$RPI_FIRMWARE_DIR/config.txt"
 fi

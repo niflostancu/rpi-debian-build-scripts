@@ -34,6 +34,7 @@ ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
 KERNEL_DEST=${KERNEL_DEST-"$BUILD_DEST/kernel-build"}
 UBOOT_DEST=${UBOOT_DEST:-"$BUILD_DEST/u-boot"}
 IMAGE_DEST=${IMAGE_DEST:-"$BUILD_DEST/image.bin"}
+BOOT_IMG_DEST=${BOOT_IMG_DEST:-"$BUILD_DEST/boot.img"}
 
 # --------------------------------------------------
 # U-Boot build options
