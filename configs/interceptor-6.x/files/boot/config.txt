@@ -1,7 +1,7 @@
-# RPI `config.txt` file to run Linux
+# RPI Interceptor board boot configuration
 
 # VPU boot settings
-boot_delay=1
+boot_delay=0
 disable_overscan=1
 disable_splash=1
 
@@ -10,13 +10,19 @@ arm_64bit=1
 enable_uart=1
 uart_2ndstage=1
 
-# CM4 doesn't use a USB3 controller
-otg_mode=1
-#dtparam=i2c_vc=on
-
 kernel={{CONFIG_KERNEL}}
 initramfs {{CONFIG_INITRD}} followkernel
 
+[cm4]
+device_tree=interceptor-cm4.dtb
+# CM4 doesn't use a USB3 controller
+otg_mode=1
+enable_gic=1
+
+[cm5]
+device_tree=interceptor-cm5.dtb
+
+[all]
 # include extra config, if any
 include extraconfig.txt
 
