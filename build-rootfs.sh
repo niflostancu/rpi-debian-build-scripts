@@ -29,7 +29,6 @@ function debootstrap_stage1() {
 # Finds the qemu-user-static binary for the appropriate platform ($1)
 function rootfs_find_qemu_static_binfmt()
 {
-    local QEMU_ARCH="$PLATFORM_ARCH"
     if [[ -n "$PLATFORM_QEMU_ARCH" ]]; then QEMU_ARCH="$PLATFORM_QEMU_ARCH"; fi
     local INTERPRETER=
     if INTERPRETER=$(cat /proc/sys/fs/binfmt_misc/qemu-"$QEMU_ARCH" | grep '^interpreter\b'); then
@@ -42,7 +41,6 @@ function rootfs_find_qemu_static_binfmt()
 function rootfs_find_qemu_static_exe()
 {
     local QEMU_STATIC_PATH=  # do not assign here because the error won't be returned
-    local QEMU_ARCH="$PLATFORM_ARCH"
     if [[ -n "$PLATFORM_QEMU_ARCH" ]]; then QEMU_ARCH="$PLATFORM_QEMU_ARCH"; fi
     if QEMU_STATIC_PATH=$(which qemu-$QEMU_ARCH-static); then
         [[ -n "$QEMU_STATIC_PATH" ]] || return 1
@@ -64,12 +62,12 @@ function rootfs_copy_qemu_static() {
     if [[ -n "$QEMU_STATIC_EXE" ]]; then
         sh_log_debug "Found qemu static (exe): $QEMU_STATIC_EXE"
         DIRNAME=$(dirname "$QEMU_STATIC_EXE")
-        install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT/$DIRNAME/" "$QEMU_STATIC_EXE"
+        $SUDO install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT$DIRNAME/" "$QEMU_STATIC_EXE"
     fi
     if [[ -n "$QEMU_STATIC_BINFMT" && "$QEMU_STATIC_BINFMT" != "$QEMU_STATIC_EXE" ]]; then
         sh_log_debug "Found qemu static (binfmt_misc): $QEMU_STATIC_BINFMT"
         DIRNAME=$(dirname "$QEMU_STATIC_BINFMT")
-        install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT/$DIRNAME/" "$QEMU_STATIC_BINFMT"
+        $SUDO install -D -m755 -oroot -groot --target-directory="$MOUNTPOINT$DIRNAME/" "$QEMU_STATIC_BINFMT"
     fi
 }
 
