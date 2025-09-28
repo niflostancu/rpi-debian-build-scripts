@@ -19,5 +19,6 @@ DOCKER_ARGS=(-it
 
 sh_log_debug "Docker args: ${DOCKER_ARGS[*]}"
 
+mkdir -p "$BUILD_DEST"
 docker run "${DOCKER_ARGS[@]}" "$BUILD_DOCKER_IMAGE" "$@"
 

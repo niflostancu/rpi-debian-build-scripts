@@ -8,7 +8,8 @@ RUN /root/provision-debian.sh
 ARG BUILDER_UID
 ARG BUILDER_GID
 RUN groupadd -g "${BUILDER_GID}" builder && \
-    useradd -l -m -u "${BUILDER_UID}" -g "${BUILDER_GID}" builder
+    useradd -l -m -u "${BUILDER_UID}" -g "${BUILDER_GID}" builder && \
+    echo 'builder ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder
 USER builder
 
 COPY . /src

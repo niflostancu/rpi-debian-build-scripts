@@ -24,7 +24,10 @@ BUILD_DEST=${BUILD_DEST:-"/tmp/rpi-debian$DISTRO_SUFFIX"}
 
 # hardcoded build root inside the docker container
 BUILD_DOCKER_DEST=${BUILD_DOCKER_DEST:-"/home/builder/rpi-debian$DISTRO_SUFFIX"}
-[[ -z "$RPI_BUILD_INSIDE_DOCKER" ]] || BUILD_DEST="$BUILD_DOCKER_DEST"
+# container build overrides
+if [[ -n "$RPI_BUILD_INSIDE_DOCKER" ]]; then
+    BUILD_DEST="$BUILD_DOCKER_DEST"
+fi
 
 # Note: you can leave those as they are automatically derived from BUILD_DEST
 ROOTFS_DEST=${ROOTFS_DEST:-"$BUILD_DEST/rootfs"}
