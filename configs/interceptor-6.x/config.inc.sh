@@ -19,6 +19,9 @@ fi
 
 # will copy kernel DTS to source dir (to compile them)
 KERNEL_COMPILE_DTS=("interceptor-cm4.dts")
+if [[ -f "$KERNEL_DTS_SRC/interceptor-cm5.dts" ]]; then
+	KERNEL_COMPILE_DTS+=("interceptor-cm5.dts")
+fi
 # RPI firmware / boot files
 RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-4-b.dtb
 	overlays/overlay_map.dtb overlays/hat_map.dtb overlays/upstream-pi4.dtbo
