@@ -7,7 +7,7 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/base.sh"
 @import 'load_config'
 
 # env / cmdline args
-SKIP_BUILD="${SKIP_BUILD:-1}"
+SKIP_BUILD="${SKIP_BUILD:-}"
 
 # config variables
 [[ -n "$KERNEL_DEST" ]] || sh_log_panic "No KERNEL_DEST given!"
@@ -76,6 +76,7 @@ fi
 
 # compilation phase
 if [[ -z "$SKIP_BUILD" ]]; then
+    sh_log_debug "kernel make:" "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_MAKE_GOALS[@]}"
     make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_MAKE_GOALS[@]}"
 fi
 
