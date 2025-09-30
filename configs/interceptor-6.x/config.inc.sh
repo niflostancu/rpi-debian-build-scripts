@@ -22,10 +22,15 @@ KERNEL_COMPILE_DTS=("interceptor-cm4.dts")
 if [[ -f "$KERNEL_DTS_SRC/interceptor-cm5.dts" ]]; then
 	KERNEL_COMPILE_DTS+=("interceptor-cm5.dts")
 fi
+RPI_COPY_EXTRA_BOOT_FILES=(
+	"$CUSTOM_CONFIG_DIR/files/boot/cmdline_cm5.txt"
+)
 # RPI firmware / boot files
 RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-4-b.dtb
 	overlays/overlay_map.dtb overlays/hat_map.dtb overlays/upstream-pi4.dtbo
-	overlays/dwc2.dtbo overlays/disable-bt.dtbo)
+	overlays/dwc2.dtbo overlays/disable-bt.dtbo
+	overlays/bcm2712d0.dtbo 
+)
 for DTS in "${KERNEL_COMPILE_DTS[@]}"; do
 	DTB="${DTS%.dts}.dtb"
 	RPI_FIRMWARE_FILES+=("/boot/$DTB")

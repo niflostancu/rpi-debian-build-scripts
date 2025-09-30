@@ -1,0 +1,1 @@
+8250.nr_uarts=1 console=tty1 console=ttyAMA0,115200 root={{ROOTFS_PARTITION}} rw rootwait fsck.repair=yes net.ifnames=0
