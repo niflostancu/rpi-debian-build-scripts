@@ -9,6 +9,9 @@ if [[ -z "$version" ]]; then
 	exit 2
 fi
 
+RPI_BOOT_CONF="/etc/rpiboot.d"
+RPI_BOOT_EXTRA_DIR="$RPI_BOOT_CONF/extra-files"
+
 RPI_CONFIG_FILE=/etc/initramfs/rpi-config.txt
 RPI_CONFIG_RAW_FILE=/etc/initramfs/rpi-config-raw.txt
 RPI_CMDLINE_FILE=/etc/initramfs/rpi-cmdline.txt
@@ -62,6 +65,18 @@ function build_firmware_partition() {
 		# save config txts to /boot/firmware
 		sh_interpolate_vars "$RPI_CONFIG" "${INTERPOLATE_VARS[@]}" > "$DEST/config.txt"
 		sh_interpolate_vars "$RPI_CMDLINE" "${INTERPOLATE_VARS[@]}" > "$DEST/cmdline.txt"
+	fi
+
+	if [[ -n "$RPI_BOOT_EXTRA_FILES" ]]; then
+		for xfile in "${RPI_BOOT_EXTRA_FILES[@]}"; do
+			extra_file="$RPI_BOOT_EXTRA_DIR/$xfile"
+			if [[ "$xfile" == *.txt ]]; then
+				sh_interpolate_vars "$(cat "$extra_file")" \
+					"${INTERPOLATE_VARS[@]}" > "$DEST/$xfile"
+			else
+				cp -f "$extra_file" "$DEST/"
+			fi
+		done
 	fi
 }
 
