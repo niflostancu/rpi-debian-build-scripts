@@ -29,6 +29,8 @@ RPI_COPY_EXTRA_BOOT_FILES=(
 RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-4-b.dtb
 	overlays/overlay_map.dtb overlays/hat_map.dtb overlays/upstream-pi4.dtbo
 	overlays/dwc2.dtbo overlays/disable-bt.dtbo
+	overlays/vc4-fkms-v3d.dtbo overlays/vc4-fkms-v3d-pi4.dtbo
+	overlays/vc4-kms-v3d.dtbo overlays/vc4-kms-v3d-pi4.dtbo overlays/vc4-kms-v3d-pi5.dtbo
 	overlays/bcm2712d0.dtbo 
 )
 for DTS in "${KERNEL_COMPILE_DTS[@]}"; do

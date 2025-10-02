@@ -286,36 +286,33 @@
 };
 
 /* enable video & HDMI */
-&aon_intr {
-	status = "okay";
-};
-&mop {
-	status = "okay";
-};
-&moplet {
-	status = "okay";
-};
-&ddc0 {
-	status = "okay";
-};
-&ddc1 {
-	status = "okay";
-};
-&pixelvalve0 {
-	status = "okay";
-};
-&pixelvalve1 {
-	status = "okay";
-};
-&vc4 {
-	status = "okay";
-};
-&hdmi0 {
-	status = "okay";
-};
-&hdmi1 {
-	status = "okay";
-};
-&vec {
-	status = "disabled";
-};
+// &aon_intr {
+// 	status = "okay";
+// };
+// &mop {
+// 	status = "okay";
+// };
+// &moplet {
+// 	status = "okay";
+// };
+// &ddc0 {
+// 	status = "okay";
+// };
+// &ddc1 {
+// 	status = "okay";
+// };
+// &pixelvalve0 {
+// 	status = "okay";
+// };
+// &pixelvalve1 {
+// 	status = "okay";
+// };
+// &vc4 {
+// 	status = "okay";
+// };
+// &hdmi0 {
+// 	status = "okay";
+// };
+// &hdmi1 {
+// 	status = "okay";
+// };

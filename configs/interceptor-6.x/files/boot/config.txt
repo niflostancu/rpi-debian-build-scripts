@@ -7,6 +7,7 @@ disable_splash=1
 # disable CEC to prevent HDMI input log spam
 hdmi_ignore_cec=1
 hdmi_ignore_cec_init=1
+#dtoverlay=vc4-fkms-v3d
 
 # Next stage config (run Linux)
 arm_64bit=1
