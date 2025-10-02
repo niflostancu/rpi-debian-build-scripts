@@ -15,6 +15,7 @@ KERNEL_BRANCH=${KERNEL_BRANCH:-"unknown_branch"}
 KERNEL_ARCH=${KERNEL_ARCH:-"arm64"}
 KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"unknown_defconfig"}
 KERNEL_LOCALVERSION=${KERNEL_LOCALVERSION:-'-rpi'}
+KERNEL_DPKG_VERSION=${KERNEL_DPKG_VERSION:-'1+custom'}
 
 if [[ -z "$KERNEL_GIT_URL" ]]; then
     KERNEL_GIT_URL="https://github.com/raspberrypi/linux"
@@ -81,7 +82,8 @@ if [[ -z "$SKIP_BUILD" ]]; then
 fi
 
 # generate binary packages
-make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" "${KERNEL_PACKAGE_GOALS[@]}"
+make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" \
+    KDEB_PKGVERSION="${KERNEL_DPKG_VERSION}" "${KERNEL_PACKAGE_GOALS[@]}"
 # distribute packages
 KERNEL_PACKAGE_PATTERNS=("linux-image-*.deb" "linux-headers-*.deb" "linux-libc-dev*.deb")
 function def_kernel_dist_hook() {
