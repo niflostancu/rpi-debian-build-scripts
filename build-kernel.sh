@@ -82,6 +82,7 @@ if [[ -z "$SKIP_BUILD" ]]; then
 fi
 
 # generate binary packages
+KERNEL_DPKG_VERSION="$(make kernelversion)-$KERNEL_DPKG_VERSION"
 make "${MAKE_ARGS[@]}" -j "$KERNEL_MAKE_THREADS" \
     KDEB_PKGVERSION="${KERNEL_DPKG_VERSION}" "${KERNEL_PACKAGE_GOALS[@]}"
 # distribute packages
