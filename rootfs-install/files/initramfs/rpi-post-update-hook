@@ -84,7 +84,7 @@ if [[ "$RPI_SKIP_BOOT_RAMDISK" =~ ^1|y(es)?$ ]]; then
 	sh_log_info "Building firmware files in '$RPI_FIRMWARE_DIR' (ver. $version)"
 	mkdir -p "$RPI_FIRMWARE_DIR"
 	build_firmware_partition "$RPI_FIRMWARE_DIR"
-	sh_log_debug $'Firmware dir contents: \n' "$(ls -lh "$MOUNT_TMP$RPI_FIRMWARE_DIR")"
+	sh_log_debug $'Firmware dir contents: \n' "$(ls -lh "$RPI_FIRMWARE_DIR")"
 	# aaand we're done!
 	exit 0
 fi
@@ -96,8 +96,9 @@ losetup /dev/loop8 "$BOOTRD_IMG"
 # close the loop device on every exit status using a trap
 cleanup() {
 	set +e
-	umount /dev/loop8
-	losetup -d /dev/loop8
+	sh_log_info "Cleaning up /dev/loop8..."
+	umount "$BOOTRD_MOUNTPOINT" || true
+	losetup -d /dev/loop8 || losetup -D
 }
 trap 'cleanup' EXIT
 
@@ -112,7 +113,7 @@ if [[ ! "$RPI_SKIP_BOOT_CONFIG" =~ ^1|y(es)?$ ]]; then
 fi
 
 sh_log_info "RPI boot ramdisk '$BOOTRD_IMG' successfull generated!"
-sh_log_debug $'Boot ramdisk contents: \n' "$(ls -lh "$MOUNT_TMP$BOOTRD_MOUNTPOINT")"
+sh_log_debug $'Boot ramdisk contents: \n' "$(ls -lh "$BOOTRD_MOUNTPOINT")"
 
 exit 0
 
