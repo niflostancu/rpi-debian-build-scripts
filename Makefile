@@ -2,6 +2,7 @@
 
 DEBUG ?=
 CFG ?=
+A ?=
 # set to 1 to run natively (instead of inside Docker)
 RUN_NATIVE ?=
 
@@ -20,7 +21,7 @@ uboot:
 	$(_RUN_CMD) ./build-uboot.sh
 
 kernel:
-	$(_RUN_CMD) ./build-kernel.sh
+	$(_RUN_CMD) ./build-kernel.sh $(A)
 
 rootfs:
 	# always run on host (since systemd-nspawn doesn't work inside the container)

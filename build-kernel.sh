@@ -52,6 +52,12 @@ MAKE_ARGS=(ARCH="$KERNEL_ARCH" CROSS_COMPILE="$CROSS_COMPILER")
 KERNEL_MAKE_GOALS=(Image modules dtbs)
 KERNEL_PACKAGE_GOALS=(bindeb-pkg)
 
+
+SHOW_MENUCONFIG=
+if [[ "$1" == "menuconfig" ]]; then
+    SHOW_MENUCONFIG=1
+fi
+
 # kernel configuration phase
 if [[ "$KERNEL_DEFCONFIG" == */* ]]; then
     # load defconfig from provided file
@@ -60,6 +66,9 @@ if [[ "$KERNEL_DEFCONFIG" == */* ]]; then
     make "${MAKE_ARGS[@]}" "$CONFIG_NAME"
 else
     make "${MAKE_ARGS[@]}" "$KERNEL_DEFCONFIG"
+fi
+if [[ -n "$SHOW_MENUCONFIG" ]]; then
+    make "${MAKE_ARGS[@]}" menuconfig
 fi
 
 if [[ -n "$KERNEL_LOCALVERSION" ]]; then
