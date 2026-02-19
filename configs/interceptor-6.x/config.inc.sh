@@ -1,7 +1,7 @@
 # Interceptor board builder configuration (latest raspberrypi downstream kernel)
 
 KERNEL_USE_MAINLINE=${KERNEL_USE_MAINLINE:-0}
-KERNEL_VERSION=${KERNEL_VERSION:-6.12}
+KERNEL_VERSION=${KERNEL_VERSION:-6.18}
 KERNEL_BRANCH="rpi-$KERNEL_VERSION.y"
 KERNEL_DEFCONFIG=${KERNEL_DEFCONFIG:-"bcm2711_defconfig"}
 KERNEL_LOCALVERSION="-interceptor-rpi"
@@ -31,7 +31,7 @@ RPI_FIRMWARE_FILES=(start4.elf fixup4.dat bcm2711-rpi-4-b.dtb
 	overlays/dwc2.dtbo overlays/disable-bt.dtbo
 	overlays/vc4-fkms-v3d.dtbo overlays/vc4-fkms-v3d-pi4.dtbo
 	overlays/vc4-kms-v3d.dtbo overlays/vc4-kms-v3d-pi4.dtbo overlays/vc4-kms-v3d-pi5.dtbo
-	overlays/bcm2712d0.dtbo 
+	overlays/bcm2712d0.dtbo
 )
 for DTS in "${KERNEL_COMPILE_DTS[@]}"; do
 	DTB="${DTS%.dts}.dtb"
