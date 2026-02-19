@@ -14,7 +14,8 @@ apt-get -y install git curl build-essential rsync debootstrap fakeroot \
 apt-get -y install python3 sudo systemd-container
 # linux kernel build dependencies
 apt-get -y install bc bison flex libssl-dev libncurses5-dev xz-utils cpio \
-    debhelper-compat dh-exec dh-python quilt kmod libelf-dev libssl-dev
+    debhelper-compat dh-exec dh-python quilt kmod libelf-dev libssl-dev \
+    libdw-dev
 
 # newer kernels require libssl-dev for target architecture (arm64)
 dpkg --add-architecture armhf && dpkg --add-architecture arm64
