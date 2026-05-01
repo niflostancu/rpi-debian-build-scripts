@@ -260,6 +260,11 @@
 
 &pcie1 {
 	status = "okay";
+	#address-cells = <3>;
+	#size-cells = <2>;
+	msi-parent = <&pciex1>;
+	dma-ranges = <0x02000000 0x0 0x00000000 0x0 0x00000000
+		0x0 0x80000000>;
 };
 
 &rp1_i2c0 {
