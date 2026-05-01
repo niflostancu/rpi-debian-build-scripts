@@ -50,7 +50,9 @@ function kernel_build_hook() {
 	for DTS in "${KERNEL_COMPILE_DTS[@]}"; do
 		DTB="${DTS%.dts}.dtb"
 		cp -f "$KERNEL_DTS_SRC/$DTS" "$KERNEL_DEST/$KERNEL_TREE_DTS_PATH/"
-		KERNEL_MAKE_GOALS+=("broadcom/$DTB")
+		grep -q "${DTB}" "$KERNEL_DEST/$KERNEL_TREE_DTS_PATH/Makefile" || \
+		echo 'dtb-$(CONFIG_ARCH_BCM2835) += '"$DTB" >> \
+			"$KERNEL_DEST/$KERNEL_TREE_DTS_PATH/Makefile"
 	done
 }
 
