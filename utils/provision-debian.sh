@@ -9,7 +9,7 @@ apt-get update
 # build tools
 apt-get -y install git curl build-essential rsync debootstrap fakeroot \
     crossbuild-essential-arm64 binfmt-support qemu-user-static \
-    device-tree-compiler devscripts
+    device-tree-compiler devscripts gnutls-dev
 # specific tooling for our build scripts
 apt-get -y install python3 sudo systemd-container
 # linux kernel build dependencies

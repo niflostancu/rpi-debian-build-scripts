@@ -41,8 +41,8 @@ BOOT_IMG_DEST=${BOOT_IMG_DEST:-"$BUILD_DEST/boot.img"}
 # -----------------------------
 
 UBOOT_GIT=${UBOOT_GIT:-"https://github.com/u-boot/u-boot.git"}
-UBOOT_BRANCH=${UBOOT_BRANCH:-"v2023.07.02"}
-UBOOT_DEFCONFIG=${UBOOT_DEFCONFIG:-"rpi_4_defconfig"}
+UBOOT_BRANCH=${UBOOT_BRANCH:-"v2026.10"}
+UBOOT_DEFCONFIG=${UBOOT_DEFCONFIG:-"rpi_arm64_defconfig"}
 UBOOT_MAKE_THREADS=${UBOOT_MAKE_THREADS:-4}
 
 # --------------------------------------------------
